@@ -1,0 +1,21 @@
+{
+    "watch": [
+        "src/**/*.ts"
+    ],
+    "ext": "ts",
+    "ignore": [
+        "node_modules/**/*",
+        "build/**/*"
+    ],
+    "delay": 1000,
+    "ignoreEvents": [
+        "**/node_modules/**/*",
+        "**/build/**/*"
+    ],
+    "ignoreInitial": true,
+    "watchOptions": {
+        "usePolling": true,
+        "useWatchFile": true
+    },
+    "exec": "ts-node src/index.ts"
+}
