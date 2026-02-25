@@ -1,0 +1,14 @@
+# Ignorar vairables de entorno
+.env
+*.env
+.env*
+.env.*
+
+# Ignorar HTML
+*.HTML
+
+# Ignorar json
+*.json
+
+# Ignorar el package.json
+package.json

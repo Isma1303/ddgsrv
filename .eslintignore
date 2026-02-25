@@ -1,0 +1,6 @@
+nodemon.json
+README.md
+.env
+tsconfig.json
+.gitignore
+package.json
