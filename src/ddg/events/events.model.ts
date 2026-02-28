@@ -7,6 +7,7 @@ export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
     this.tableSchema = "ddg";
     this.tableName = "service_events";
     this.tableKey = "service_event_id";
+    this.tableAlias = "e";
     this.tableColumns = [
       {
         field: "service_event_id",
@@ -44,6 +45,19 @@ export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
         description: "Service Event Active Status",
         type: "boolean",
       },
+      {
+        field: 'department_id',
+        required: true,
+        description: 'Department Identifier',
+        type: 'number',
+        join:{
+          table: 'departments',
+          tableSchema: 'ddg',
+          tableAlias: 'd',
+          field: 'department_id',
+          type: 'left'
+        }
+      }
     ];
   }
 
