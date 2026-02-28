@@ -5,7 +5,7 @@ export class DepartmentModel extends Model<IDepartment, IDepartmentNew, IDepartm
     constructor() {
         super()
         this.tableSchema = 'ddg'
-        this.tableName = 'department'
+        this.tableName = 'departments'
         this.tableKey = 'department_id'
         this.tableColumns = [
             {

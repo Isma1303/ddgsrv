@@ -22,6 +22,12 @@ export class RoleModel extends Model<IRole,
                 required: true,
                 description: 'Role name',
                 type: 'string'
+            },
+            {
+                field: 'is_active',
+                required: true,
+                description: 'Role is active',
+                type: 'boolean'
             }
         ]
     }

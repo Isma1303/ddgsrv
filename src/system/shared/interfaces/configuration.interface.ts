@@ -20,4 +20,14 @@ export interface Configuration {
         secret: string
     }
 
+    mailTrap: {
+        host: string
+        port: number
+        user: string
+        password: string
+        from: string
+    }
+
+    logo_url: string
+
 }

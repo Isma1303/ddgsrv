@@ -56,7 +56,7 @@ export class UserController extends Controller<IUser, IUserNew, IUserUpdate> {
                 }
             }
 
-            const token = generateToken({ user_id: user.user_id, role: user.role })
+            const token = generateToken({ user_id: user.user_id })
 
             res.cookie("token", token, {
                 httpOnly: true,
@@ -69,7 +69,6 @@ export class UserController extends Controller<IUser, IUserNew, IUserUpdate> {
                 data: {
                     token,
                     user_id: user.user_id,
-                    role: user.role
                 }
             }
         } catch (error) {
@@ -102,8 +101,10 @@ export class UserController extends Controller<IUser, IUserNew, IUserUpdate> {
     async updatePassword(req: Request): Promise<Response> {
         const model = new UserModel()
         try {
-            const user: IUserUpdate = req.body
-            const response = await model.updatePassword(user.user_id!, user.password!)
+            const { password } = req.body
+            const { user_id } = req.params
+            const hashPassword = await bcrypt.hash(password, 10)
+            const response = await model.updatePassword(Number(user_id), hashPassword)
             return {
                 message: "User password updated successfully",
                 status: HttpResponseStatus.OK,
@@ -112,6 +113,44 @@ export class UserController extends Controller<IUser, IUserNew, IUserUpdate> {
         } catch (error) {
             return {
                 message: "User password update failed",
+                status: HttpResponseStatus.INTERNAL_SERVER_ERROR,
+                data: error
+            }
+        }
+    }
+
+    async profile(req: Request): Promise<Response> {
+        const model = new UserModel()
+        try {
+            const { user_id } = req.params
+            const user = await model.profile(Number(user_id))
+            return {
+                message: "User profile fetched successfully",
+                status: HttpResponseStatus.OK,
+                data: user
+            }
+        } catch (error) {
+            return {
+                message: "User profile fetch failed",
+                status: HttpResponseStatus.INTERNAL_SERVER_ERROR,
+                data: error
+            }
+        }
+    }
+
+    async deleteUser(req: Request): Promise<Response> {
+        const model = new UserModel()
+        try {
+            const { id } = req.params
+            const response = await model.deleteUser(Number(id))
+            return {
+                message: "User deleted successfully",
+                status: HttpResponseStatus.OK,
+                data: response
+            }
+        } catch (error) {
+            return {
+                message: "User deletion failed",
                 status: HttpResponseStatus.INTERNAL_SERVER_ERROR,
                 data: error
             }

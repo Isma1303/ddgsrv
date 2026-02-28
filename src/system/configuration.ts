@@ -18,5 +18,14 @@ export const configuration: Configuration = {
     },
     jwt: {
         secret: process.env.JWT_SECRET || "secret"
-    }
+    },
+    mailTrap: {
+        host: process.env.MAIL_TRAP_HOST || "",
+        port: Number(process.env.MAIL_TRAP_PORT) || 1,
+        user: process.env.MAIL_TRAP_USER || "",
+        password: process.env.MAIL_TRAP_PASSWORD || "",
+        from: process.env.MAIL_FROM || ""
+    },
+
+    logo_url: process.env.LOGO_URL || ""
 }

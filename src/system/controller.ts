@@ -48,8 +48,9 @@ export class Controller<T, TNew, TUpdate> {
 
     async update(req: Request) {
         try {
-            const { id, data } = req.body
-            const response = await this.model.update(id, data)
+            const { id } = req.params
+            const data: TUpdate = req.body
+            const response = await this.model.update(id as any, data)
             return {
                 status: HttpResponseStatus.OK,
                 data: response,
@@ -67,7 +68,7 @@ export class Controller<T, TNew, TUpdate> {
     async delete(req: Request) {
         try {
             const { id } = req.params
-            const response = await this.model.delete(id as any)
+            const response = await this.model.delete(Number(id))
             return {
                 status: HttpResponseStatus.OK,
                 data: response,

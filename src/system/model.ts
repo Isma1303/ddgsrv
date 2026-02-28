@@ -26,8 +26,8 @@ export class Model<T, TNew, TUpdate> {
             const pool = db
             const result = await pool.select().from(`${this.tableSchema}.${this.tableName}`)
             return result
-        } catch (error) {
-            throw error
+        } catch (error: any) {
+            throw error.message
         }
     }
 
@@ -37,8 +37,8 @@ export class Model<T, TNew, TUpdate> {
             const result = await pool.select().from(`${this.tableSchema}.${this.tableName}`).where(this.tableKey, id)
             return result[0]
 
-        } catch (error) {
-            throw error
+        } catch (error: any) {
+            throw error.message
         }
     }
 
@@ -54,9 +54,9 @@ export class Model<T, TNew, TUpdate> {
             const result = await transaction.insert(data).into(`${this.tableSchema}.${this.tableName}`)
             await transaction.commit()
             return result
-        } catch (error) {
+        } catch (error: any) {
             await transaction.rollback()
-            throw error
+            throw error.message
         }
     }
 
@@ -67,9 +67,9 @@ export class Model<T, TNew, TUpdate> {
             const result = await transaction.update(data).into(`${this.tableSchema}.${this.tableName}`).where(this.tableKey, id)
             await transaction.commit()
             return result
-        } catch (error) {
+        } catch (error: any) {
             await transaction.rollback()
-            throw error
+            throw error.message
         }
     }
 
@@ -80,9 +80,9 @@ export class Model<T, TNew, TUpdate> {
             const result = await transaction.delete().from(`${this.tableSchema}.${this.tableName}`).where(this.tableKey, id)
             await transaction.commit()
             return result
-        } catch (error) {
+        } catch (error: any) {
             await transaction.rollback()
-            throw error
+            throw error.message
         }
     }
 }
