@@ -3,7 +3,7 @@ import { createTransport } from 'nodemailer'
 
 const smtpPort = configuration.mailTrap.port
 const smtpHost = configuration.mailTrap.host
-const smtpServerName = process.env.MAIL_TRAP_TLS_SERVERNAME || (smtpHost === 'smtp-relay.brevo.com' ? 'smtp-relay.sendinblue.com' : smtpHost)
+const smtpServerName = process.env.MAIL_TRAP_TLS_SERVERNAME 
 const fromAddressPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const namedFromAddressPattern = /^.+<[^\s@]+@[^\s@]+\.[^\s@]+>$/
 
@@ -15,7 +15,7 @@ const isValidFromAddress = (value: string): boolean => {
 export const emailConfig = createTransport({
     host: smtpHost,
     port: smtpPort,
-    secure: smtpPort === 465,
+    secure: false,
     tls: {
         servername: smtpServerName
     },

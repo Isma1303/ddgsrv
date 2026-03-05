@@ -77,7 +77,6 @@ export class EventsController extends Controller<
         await sendEmail(
           user.email,
           "Recordatorio de Evento",
-          "Recordatorio de Evento",
           ReminderTemplate(
             configuration.logo_url,
             user.user_nm,

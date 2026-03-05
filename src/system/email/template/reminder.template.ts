@@ -1,6 +1,3 @@
-import { IUser } from "../../../admin/auth/user.interface";
-import { IEvent } from "../../../ddg/events/events.interface";
-
 export const ReminderTemplate = (
     logo_url: string,
     user_name: string,
