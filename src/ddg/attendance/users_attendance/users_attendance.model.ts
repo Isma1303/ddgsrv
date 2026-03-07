@@ -7,6 +7,7 @@ export class AttendanceModel extends Model<IAttendance, never, never> {
     this.tableSchema = "ddg";
     this.tableName = "attendance";
     this.tableAlias = "a";
+    this.tableKey = "user_id";
     this.tableColumns = [
       {
         field: "service_event_id",
@@ -25,6 +26,12 @@ export class AttendanceModel extends Model<IAttendance, never, never> {
         description: "attendance_status_id",
         type: "number",
         required: true,
+      },
+      {
+        field: "notes",
+        description: "notes",
+        type: "string",
+        required: false,
       },
     ];
   }

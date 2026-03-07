@@ -1,8 +1,9 @@
 export interface IRole {
-    role_id: number
-    role_nm: string
-    is_active: boolean
+  role_id: number;
+  role_nm: string;
+  role_cd: string;
+  is_active: boolean;
 }
 
-export interface IRoleNew extends Omit<IRole, 'role_id'> { }
-export interface IRoleUpdate extends Partial<IRole> { }
+export interface IRoleNew extends Omit<IRole, "role_id"> {}
+export interface IRoleUpdate extends Partial<IRole> {}

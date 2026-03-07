@@ -1,11 +1,46 @@
+import { DepartmentModel } from "../../../ddg/departments/department.model";
+
 export const ReminderTemplate = (
-    logo_url: string,
-    user_name: string,
-    service_name: string,
-    service_date:string | Date,
-    event_link: string,
+  logo_url: string,
+  user_name: string,
+  service_name: string,
+  service_date: string | Date,
+  event_link: string,
+  event_start: string | Date,
+  event_end: string | Date,
+  notes?: string,
 ) => {
+  const departmentModel = new DepartmentModel();
+  const formatDate = (value: string | Date): string => {
+    const date = value instanceof Date ? value : new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return String(value);
+    }
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
+
+  const formatTime = (value: string | Date): string => {
+    const date = value instanceof Date ? value : new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return String(value);
+    }
+
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${hours}:${minutes}`;
+  };
+
+  const formattedServiceDate = formatDate(service_date);
   const year = new Date().getFullYear();
+
   return `
     <!DOCTYPE html>
 <html lang="es">
@@ -54,34 +89,32 @@ export const ReminderTemplate = (
                                         </p>
 
                                         <p style="margin:10px 0;">
-                                            <strong>Fecha:</strong> ${service_date}
+                                            <strong>Fecha:</strong> ${formattedServiceDate}
                                         </p>
 
                                         <p style="margin:10px 0;">
                                             <strong>Departamento:</strong> ${event_link}
                                         </p>
 
-                                    </td>
-                                </tr>
-                            </table>
+                                        <p style="margin:10px 0;">
+                                            <strong>Hora de inicio:</strong> ${formatTime(event_start)}
+                                        </p>
 
-                            <!-- Botón -->
-                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:30px;">
-                                <tr>
-                                    <td align="center">
-                                        <a href="${event_link}"
-                                           style="background-color:#06b6d4; 
-                                                  color:#ffffff; 
-                                                  text-decoration:none; 
-                                                  padding:14px 30px; 
-                                                  border-radius:5px; 
-                                                  display:inline-block; 
-                                                  font-weight:bold;">
-                                            Ver Detalles
-                                        </a>
+                                        <p style="margin:10px 0;">
+                                            <strong>Hora de finalización:</strong> ${formatTime(event_end)}
+                                        </p>
+                                        ${
+                                          notes
+                                            ? `
+                                        <p style="margin:10px 0;">
+                                            <strong>Notas:</strong> ${notes}
+                                        </p>
+                                        `
+                                            : ""
+                                        }
                                     </td>
                                 </tr>
-                            </table>
+                            </table>                          
 
                             <p style="font-size:14px; margin-top:30px; line-height:1.6;">
                                 Por favor, asegúrate de asistir puntualmente.
@@ -92,7 +125,7 @@ export const ReminderTemplate = (
 
                     <tr>
                         <td align="center" style="padding:20px; font-size:12px; color:#666666; border-top:1px solid #e5e5e5;">
-                            © ${year} Tu Empresa <br>
+                            © ${year} Codeliq <br>
                             Este es un correo automático, por favor no responder.
                         </td>
                     </tr>

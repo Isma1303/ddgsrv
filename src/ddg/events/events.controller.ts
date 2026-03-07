@@ -1,11 +1,15 @@
 import { IUser } from "../../admin/auth/user.interface";
+import { RoleModel } from "../../admin/role/role.model";
 import { configuration } from "../../system/configuration";
 import { Controller } from "../../system/controller";
 import { sendEmail } from "../../system/email/email.config";
 import { ReminderTemplate } from "../../system/email/template/reminder.template";
+import { getUserToken } from "../../system/shared/utils/req.utils";
 import { IEvent, IEventNew, IEventUpdate } from "./events.interface";
 import { EventsModel } from "./events.model";
 import { Request } from "express";
+
+const EMAIL_SEND_DELAY_MS = Number(process.env.EMAIL_SEND_DELAY_MS || 7000);
 
 export class EventsController extends Controller<
   IEvent,
@@ -72,22 +76,58 @@ export class EventsController extends Controller<
       const uniqueUsersByEmail = Array.from(
         new Map(usersWithEmail.map((user) => [user.email, user])).values(),
       );
-      //todo: actualizar plan para enviar multiples correos a la vez y no uno por uno, para mejorar performance
+
+      const getDepartmentName: any = await model.getDepartmentByEvent(
+        Number(eventId),
+      );
+
+      let successfulEmails = 0;
+      let rateLimited = false;
+
       for (const user of uniqueUsersByEmail) {
-        await sendEmail(
+        const reminderHtml = ReminderTemplate(
+          configuration.logo_url,
+          user.user_nm,
+          user.service_nm,
+          user.service_date,
+          getDepartmentName.department_nm!,
+          user.start_time!,
+          user.end_time!,
+          user.notes,
+        );
+
+        const sendResult = await sendEmail(
           user.email,
           "Recordatorio de Evento",
-          ReminderTemplate(
-            configuration.logo_url,
-            user.user_nm,
-            user.service_nm,
-            user.service_date,
-            user.department_nm!,
-          ),
+          `Hola ${user.user_nm}, este es un recordatorio de tu evento: ${user.service_nm} (${user.service_date}).`,
+          reminderHtml,
+        );
+
+        if (sendResult.sent) {
+          successfulEmails += 1;
+        }
+
+        if (sendResult.rateLimited) {
+          rateLimited = true;
+          break;
+        }
+
+        await new Promise((resolve) =>
+          setTimeout(resolve, EMAIL_SEND_DELAY_MS),
         );
       }
 
-      const successfulEmails = uniqueUsersByEmail.length;
+      if (rateLimited) {
+        return {
+          status: 429,
+          message: "Email provider rate limit reached. Retry in a few minutes.",
+          data: {
+            totalUsers: uniqueUsersByEmail.length,
+            sentEmails: successfulEmails,
+            failedEmails: uniqueUsersByEmail.length - successfulEmails,
+          },
+        };
+      }
 
       if (successfulEmails === 0) {
         return {
@@ -178,6 +218,7 @@ export class EventsController extends Controller<
     try {
       const model = this.model as EventsModel;
       const userId = req.params.userId;
+      const userRole = await getUserToken(req);
 
       if (!userId) {
         return {
@@ -186,12 +227,50 @@ export class EventsController extends Controller<
         };
       }
 
-      const result = await model.getEventsByUserId(Number(userId));
+      const roleCd = userRole.role_cd;
+
+      if (roleCd == "USER") {
+        const result = await model.getEventsByUserId(Number(userId));
+
+        return {
+          status: 200,
+          message: "Events retrieved successfully",
+          data: result.rows,
+        };
+      }
+
+      if (roleCd == "LEADER") {
+        if (!userRole.department_id) {
+          return {
+            status: 400,
+            message: "Leader has no assigned department",
+          };
+        }
+
+        const result = await model.getEventsByDepartment(
+          userRole.department_id,
+        );
+
+        return {
+          status: 200,
+          message: "Events retrieved successfully",
+          data: result.rows,
+        };
+      }
+
+      if (roleCd == "ADMIN") {
+        const result = await model.getAll();
+
+        return {
+          status: 200,
+          message: "Events retrieved successfully",
+          data: result,
+        };
+      }
 
       return {
-        status: 200,
-        message: "Events retrieved successfully",
-        data: result.rows,
+        status: 403,
+        message: "Role not authorized to retrieve events",
       };
     } catch (error: any) {
       return {
@@ -262,7 +341,7 @@ export class EventsController extends Controller<
     }
   }
 
-  async attendance(req:Request){
+  async attendance(req: Request) {
     try {
       const model = this.model as EventsModel;
       const { user_id, event_id } = req.body;
@@ -280,5 +359,4 @@ export class EventsController extends Controller<
       };
     }
   }
-
 }

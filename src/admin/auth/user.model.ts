@@ -50,10 +50,25 @@ export class UserModel extends Model<IUser, IUserNew, IUserUpdate> {
 
   async login(email: string): Promise<IUser> {
     try {
-      const user = await (await this.pool())
-        .select("*")
-        .from(`${this.tableSchema}.${this.tableName}`)
-        .where("email", email)
+      const user = await (
+        await this.pool()
+      )
+        .select(
+          "u.*",
+          "ur.role_id",
+          "r.role_cd",
+          "dm.department_id",
+          "dm.is_leader",
+        )
+        .from({ u: `${this.tableSchema}.${this.tableName}` })
+        .leftJoin(
+          { ur: `${this.tableSchema}.user_roles` },
+          "u.user_id",
+          "ur.user_id",
+        )
+        .leftJoin({ r: `${this.tableSchema}.role` }, "ur.role_id", "r.role_id")
+        .leftJoin({ dm: `ddg.department_members` }, "u.user_id", "dm.user_id")
+        .where("u.email", email)
         .first();
       return user;
     } catch (error: any) {
@@ -86,25 +101,27 @@ export class UserModel extends Model<IUser, IUserNew, IUserUpdate> {
     }
   }
 
-async profile(userId: number): Promise<IUser> {
-  try {
-    const schema = this.tableSchema;
-    const usersTable = this.tableName;  
-    const userKey = this.tableKey;      
+  async profile(userId: number): Promise<IUser> {
+    try {
+      const schema = this.tableSchema;
+      const usersTable = this.tableName;
+      const userKey = this.tableKey;
 
-    const user = await (await this.pool())
-      .select("u.*", "r.*") 
-      .from({ u: `${schema}.${usersTable}` })
-      .join({ ur: `${schema}.user_roles` }, `u.${userKey}`, "=", "ur.user_id")
-      .join({ r: `${schema}.role` }, "ur.role_id", "=", "r.role_id")
-      .where(`u.${userKey}`, userId)
-      .first();
+      const user = await (
+        await this.pool()
+      )
+        .select("u.*", "r.*")
+        .from({ u: `${schema}.${usersTable}` })
+        .join({ ur: `${schema}.user_roles` }, `u.${userKey}`, "=", "ur.user_id")
+        .join({ r: `${schema}.role` }, "ur.role_id", "=", "r.role_id")
+        .where(`u.${userKey}`, userId)
+        .first();
 
-    return user;
-  } catch (error: any) {
-    throw error.message;
+      return user;
+    } catch (error: any) {
+      throw error.message;
+    }
   }
-}
 
   async deleteUser(id: number) {
     const pool = await this.pool();
