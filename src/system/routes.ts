@@ -8,6 +8,13 @@ import attendanceStatusRoutes from "../ddg/attendance/attendance_status/attendan
 import assignamentRoutes from "../admin/assignaments/assignament.route";
 import dashboardRoutes from "../ddg/dashboard/dashboard.route";
 import attendanceRoute from "../ddg/attendance/users_attendance/users_attendance.route";
+import productCategorieRoure from "../coffe/product_categories/product_categorie.route";
+import productRoutes from "../coffe/products/products.route";
+import menuRoutes from "../coffe/menus/menus.route";
+import menuSectionRoutes from "../coffe/menu_sections/menu_sections.route";
+import menuItemRoutes from "../coffe/menu_items/menu_items.route";
+import saleRoutes from "../coffe/sales/sales.route";
+import saleLineRoutes from "../coffe/sale_lines/sale_lines.route";
 
 const router = Router();
 
@@ -20,5 +27,12 @@ router.use("/ddg/departments", departmentRoutes);
 router.use("/ddg/attendance-status", attendanceStatusRoutes);
 router.use("/ddg/dashboard", dashboardRoutes);
 router.use("/ddg/attendance", attendanceRoute);
+router.use("/coffee/product-categories", productCategorieRoure);
+router.use("/coffee/products", productRoutes);
+router.use("/coffee/menus", menuRoutes);
+router.use("/coffee/menu-sections", menuSectionRoutes);
+router.use("/coffee/menu-items", menuItemRoutes);
+router.use("/coffee/sales", saleRoutes);
+router.use("/coffee/sale-lines", saleLineRoutes);
 
 export default router;
