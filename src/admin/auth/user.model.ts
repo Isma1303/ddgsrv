@@ -143,4 +143,16 @@ export class UserModel extends Model<IUser, IUserNew, IUserUpdate> {
       throw error.message;
     }
   }
+
+  public async getUsersInfo() {
+    try {
+      const pool = await this.pool();
+      const response = await pool.raw(
+        "SELECT u.user_id, u.user_nm, u.user_lt, u.email, r.role_cd, d.department_nm FROM admin.users u JOIN admin.user_roles ur ON u.user_id = ur.user_id JOIN admin.role r ON ur.role_id = r.role_id JOIN ddg.department_members dm ON u.user_id = dm.user_id JOIN ddg.departments d ON dm.department_id = d.department_id WHERE u.status = true",
+      );
+      return response.rows;
+    } catch (error: any) {
+      throw error.message;
+    }
+  }
 }

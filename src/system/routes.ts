@@ -15,6 +15,7 @@ import menuSectionRoutes from "../coffe/menu_sections/menu_sections.route";
 import menuItemRoutes from "../coffe/menu_items/menu_items.route";
 import saleRoutes from "../coffe/sales/sales.route";
 import saleLineRoutes from "../coffe/sale_lines/sale_lines.route";
+import userCardRoutes from "../ddg/user_cards/user_card.route";
 
 const router = Router();
 
@@ -27,6 +28,7 @@ router.use("/ddg/departments", departmentRoutes);
 router.use("/ddg/attendance-status", attendanceStatusRoutes);
 router.use("/ddg/dashboard", dashboardRoutes);
 router.use("/ddg/attendance", attendanceRoute);
+router.use("/ddg/user-cards", userCardRoutes);
 router.use("/coffee/product-categories", productCategorieRoure);
 router.use("/coffee/products", productRoutes);
 router.use("/coffee/menus", menuRoutes);

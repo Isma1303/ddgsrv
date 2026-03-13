@@ -183,4 +183,22 @@ export class UserController extends Controller<IUser, IUserNew, IUserUpdate> {
       };
     }
   }
+
+  async getUSersInfo(): Promise<any> {
+    const model = new UserModel();
+    try {
+      const response = await model.getUsersInfo();
+      return {
+        message: "Users info fetched successfully",
+        status: HttpResponseStatus.OK,
+        data: response,
+      };
+    } catch (error) {
+      return {
+        message: "Users info fetch failed",
+        status: HttpResponseStatus.INTERNAL_SERVER_ERROR,
+        data: error,
+      };
+    }
+  }
 }
