@@ -7,7 +7,7 @@ import { IRole } from '../role/role.interface'
 export default class RoleActionModel<T, TNew, TUpdate> extends Model<T, TNew, TUpdate> {
     constructor() {
         super()
-        this.connectionName = 'DB_ADMIN'
+        this.connectionName = 'DB_codeliq'
         this.schemaName = 'admin'
         this.tableName = 'Role_actions'
         this.assignmentIds = ['role_id', 'action_id']
@@ -43,8 +43,8 @@ export default class RoleActionModel<T, TNew, TUpdate> extends Model<T, TNew, TU
             const unassignedActions = (
                 await pool
                     .select('a.action_id', 'a.action', 'c.table_name', 'a.write_permission')
-                    .from(`${this.schemaName}.actions as a`)
-                    .leftJoin(`${this.schemaName}.tables as c`, 'a.table_id', 'c.table_id')
+                    .from(`${this.schemaName}.Actions as a`)
+                    .leftJoin(`${this.schemaName}.Tables as c`, 'a.table_id', 'c.table_id')
                     .leftJoin(`${this.schemaName}.${this.tableName} as b`, function () {
                         this.on('a.action_id', '=', 'b.action_id').andOn('b.role_id', '=', pool.raw('?', [role_id]))
                     })
@@ -74,7 +74,7 @@ export default class RoleActionModel<T, TNew, TUpdate> extends Model<T, TNew, TU
             const unassignedRoles = (
                 await pool
                     .select('a.role_id', 'a.role')
-                    .from(`${this.schemaName}.roles as a`)
+                    .from(`${this.schemaName}.Roles as a`)
                     .leftJoin(`${this.schemaName}.${this.tableName} as b`, function () {
                         this.on('a.role_id', '=', 'b.role_id').andOn('b.action_id', '=', pool.raw('?', [action_id]))
                     })

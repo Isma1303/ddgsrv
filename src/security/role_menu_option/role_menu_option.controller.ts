@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import Controller from '../../system/controller'
 import Condition from '../../system/interfaces/condition.interface'
-import Response from '../../system/interfaces/response.interface'
+import IResponse from '../../system/interfaces/response.interface'
 import MenuOptionModel from '../menu_option/menu_option.model'
 import RoleModel from '../role/role.model'
 import RoleMenuOptionModel from './role_menu_option.model'
@@ -26,11 +26,11 @@ export default class RoleMenuOptionController extends Controller<IRoleMenuOption
         })
     }
 
-    async getMenuOptions(req: Request): Promise<Response> {
+    async getMenuOptions(req: Request): Promise<IResponse> {
         try {
             if (!req.params.role_id) throw new MissingParameterError('role_id')
 
-            const role_id = parseInt(req.params.role_id)
+            const role_id = parseInt(req.params.role_id as string)
 
             if (isNaN(role_id)) throw new InvalidParameterTypeError('role_id', 'number')
 
@@ -42,13 +42,13 @@ export default class RoleMenuOptionController extends Controller<IRoleMenuOption
         }
     }
 
-    async getAdminMenuOptions(req: Request): Promise<Response> {
+    async getAdminMenuOptions(req: Request): Promise<IResponse> {
         try {
             const fields = ['menu_option_id as id', 'menu_option as text', 'icon as icon', 'path', 'parent_menu_option_id as parentId', 'sort']
 
             if (!req.params.role_id) throw new MissingParameterError('role_id')
 
-            const role_id = parseInt(req.params.role_id)
+            const role_id = parseInt(req.params.role_id as string)
 
             if (isNaN(role_id)) throw new InvalidParameterTypeError('role_id', 'number')
 
@@ -60,11 +60,11 @@ export default class RoleMenuOptionController extends Controller<IRoleMenuOption
         }
     }
 
-    async getRoles(req: Request): Promise<Response> {
+    async getRoles(req: Request): Promise<IResponse> {
         try {
             if (!req.params.menu_option_id) throw new MissingParameterError('menu_option_id')
 
-            const menu_option_id = parseInt(req.params.menu_option_id)
+            const menu_option_id = parseInt(req.params.menu_option_id as string)
 
             if (isNaN(menu_option_id)) throw new InvalidParameterTypeError('menu_option_id', 'number')
 
@@ -76,11 +76,11 @@ export default class RoleMenuOptionController extends Controller<IRoleMenuOption
         }
     }
 
-    public async deleteMenuOptions(req: Request): Promise<Response> {
+    public async deleteMenuOptions(req: Request): Promise<IResponse> {
         try {
             if (!req.params.role_id) throw new MissingParameterError('role_id')
 
-            const role_id = parseInt(req.params.role_id)
+            const role_id = parseInt(req.params.role_id as string)
 
             if (isNaN(role_id)) throw new InvalidParameterTypeError('role_id', 'number')
 

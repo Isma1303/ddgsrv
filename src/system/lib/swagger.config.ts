@@ -2,9 +2,9 @@ export const swaggerConfig = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'Solcomp API',
+            title: 'codeliq API',
             version: '0.0.1',
-            description: 'Servidor para Solcomp',
+            description: 'Servidor para codeliq',
         },
         servers: [
             {

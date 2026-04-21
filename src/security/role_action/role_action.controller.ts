@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import Controller from '../../system/controller'
 import Condition from '../../system/interfaces/condition.interface'
-import Response from '../../system/interfaces/response.interface'
+import IResponse from '../../system/interfaces/response.interface'
 import ActionModel from '../action/action.model'
 import RoleModel from '../role/role.model'
 import RoleActionModel from './role_action.model'
@@ -27,11 +27,11 @@ export default class RoleActionController extends Controller<IRoleAction, IRoleA
         })
     }
 
-    async getActions(req: Request): Promise<Response> {
+    async getActions(req: Request): Promise<IResponse> {
         try {
             if (!req.params.role_id) throw new MissingParameterError('role_id')
 
-            const role_id = parseInt(req.params.role_id)
+            const role_id = parseInt(req.params.role_id as string)
 
             if (isNaN(role_id)) throw new InvalidParameterTypeError('role_id', 'number')
 
@@ -42,11 +42,11 @@ export default class RoleActionController extends Controller<IRoleAction, IRoleA
         }
     }
 
-    async getRoles(req: Request): Promise<Response> {
+    async getRoles(req: Request): Promise<IResponse> {
         try {
             if (!req.params.action_id) throw new MissingParameterError('action_id')
 
-            const action_id = parseInt(req.params.action_id)
+            const action_id = parseInt(req.params.action_id as string)
 
             if (isNaN(action_id)) throw new InvalidParameterTypeError('action_id', 'number')
 
@@ -58,11 +58,11 @@ export default class RoleActionController extends Controller<IRoleAction, IRoleA
         }
     }
 
-    public async deleteActions(req: Request): Promise<Response> {
+    public async deleteActions(req: Request): Promise<IResponse> {
         try {
             if (!req.params.role_id) throw new MissingParameterError('role_id')
 
-            const role_id = parseInt(req.params.role_id)
+            const role_id = parseInt(req.params.role_id as string)
 
             if (isNaN(role_id)) throw new InvalidParameterTypeError('role_id', 'number')
 

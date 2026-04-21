@@ -1,6 +1,6 @@
 import { Knex } from 'knex'
 import Model from '../../system/model'
-import { atob, encryptText } from '../../system/utils/crypt.utils'
+import { decodeBase64IfNeeded, encryptText } from '../../system/utils/crypt.utils'
 import { InvalidStructureError } from '../../system/errors/model.error'
 import { UpdateByIdParams } from '../../system/interfaces/model.interface'
 import { getEditAuditFields } from '../../system/utils/audit.utils'
@@ -9,7 +9,7 @@ import { IUser, IUserNew, IUserUpdate } from './user.interface'
 export default class UserModel extends Model<IUser, IUserNew, IUserUpdate> {
     constructor() {
         super()
-        this.connectionName = 'DB_ADMIN'
+        this.connectionName = 'DB_codeliq'
         this.schemaName = 'admin'
         this.tableName = 'Users'
         this.tableId = 'user_id'
@@ -52,13 +52,13 @@ export default class UserModel extends Model<IUser, IUserNew, IUserUpdate> {
         this.fieldNames = this.getFieldsString()
     }
 
-    async add(record: IUserNew): Promise<IUser | null> {
+    async add(record: IUserNew, userId: number): Promise<IUser | null> {
         try {
             const invalidFields = this.validateFields(record)
             if (invalidFields.length !== 0)
                 throw new InvalidStructureError('The record structure does not meet the minimum requirements', invalidFields)
 
-            record.password = await encryptText(atob(record.password!), 10)
+            record.password = await encryptText(decodeBase64IfNeeded(record.password!), 10)
             const pool: Knex = await this.connection.getConnection(this.connectionName)
             const insertedRecord = await pool!.insert(record).into(`${this.schemaName}.${this.tableName}`).returning(this.fieldNames)
             return insertedRecord.length > 0 ? insertedRecord[0] : null
@@ -73,7 +73,7 @@ export default class UserModel extends Model<IUser, IUserNew, IUserUpdate> {
             if (invalidFields.length !== 0)
                 throw new InvalidStructureError('The record structure does not meet the minimum requirements', invalidFields)
 
-            if (record.password) record.password = await encryptText(atob(record.password), 10)
+            if (record.password) record.password = await encryptText(decodeBase64IfNeeded(record.password), 10)
 
             if (this.addAuditFields) record = getEditAuditFields(record, userId)
 

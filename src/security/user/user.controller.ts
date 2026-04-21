@@ -1,13 +1,13 @@
-import { Request } from 'express-serve-static-core'
+import { Request } from 'express'
 import Controller from '../../system/controller'
 import Condicion from '../../system/interfaces/condition.interface'
-import Response from '../../system/interfaces/response.interface'
+import IResponse from '../../system/interfaces/response.interface'
 import UserModel from './user.model'
 import * as jwt from 'jsonwebtoken'
 import config from '../../config'
-import { ResponseToken } from '../../system/interfaces/token_response.interface'
-import { atob, comparePassword } from '../../system/utils/crypt.utils'
-import { getUserId, verifyToken, verifyTokenAD } from '../../system/utils/auth.utils'
+import { IResponseToken } from '../../system/interfaces/token_response.interface'
+import { comparePassword, decodeBase64IfNeeded } from '../../system/utils/crypt.utils'
+import { getUserId, verifyToken } from '../../system/utils/auth.utils'
 import ConfiguracionModel from '../configuration/configuration.model'
 import { HttpStatusCodes } from '../../system/interfaces/http_status_codes'
 import { MissingParameterError, ResetPasswordTokenExpiredError, UnauthorizedError } from '../../system/errors/controller.error'
@@ -25,20 +25,12 @@ export default class userController extends Controller<IUser, IUserNew, IUserUpd
         this.model = new UserModel()
     }
 
-    public async authenticate(req: Request): Promise<ResponseToken | Response> {
+    public async authenticate(req: Request): Promise<IResponseToken | IResponse> {
         try {
-            const params = parseHeaderParams(req.headers, ['ms'])
-            let { password } = req.body
-            const { user, ms_token } = req.body
+            const { user, password: encodedPassword } = req.body
 
-            if (params.ms && params.ms == '1') {
-                if (!ms_token) throw new GenericError('Invalid Token', HttpStatusCodes.BAD_REQUEST)
-            } else {
-                if (!password || password === '') throw new MissingParameterError('password')
-                if (!user || user === '') throw new MissingParameterError('user')
-
-                if (password) password = atob(password)
-            }
+            if (!encodedPassword || encodedPassword === '') throw new MissingParameterError('password')
+            if (!user || user === '') throw new MissingParameterError('user')
 
             const foundUser = await this.getUserAuthentication(req)
 
@@ -64,7 +56,7 @@ export default class userController extends Controller<IUser, IUserNew, IUserUpd
         }
     }
 
-    public async authToken(req: Request): Promise<ResponseToken | Response> {
+    public async authToken(req: Request): Promise<IResponseToken | IResponse> {
         try {
             const foundUser = await this.getUserAuthentication(req)
 
@@ -104,7 +96,7 @@ export default class userController extends Controller<IUser, IUserNew, IUserUpd
         )
     }
 
-    public async getUserInfo(req: Request): Promise<Response> {
+    public async getUserInfo(req: Request): Promise<IResponse> {
         try {
             const userId = (await getUserId(req)) || 0
 
@@ -140,7 +132,7 @@ export default class userController extends Controller<IUser, IUserNew, IUserUpd
         }
     }
 
-    public async getAuthenticatedUser(req: Request): Promise<Response> {
+    public async getAuthenticatedUser(req: Request): Promise<IResponse> {
         try {
             const userId = (await getUserId(req)) || 0
 
@@ -156,7 +148,7 @@ export default class userController extends Controller<IUser, IUserNew, IUserUpd
         }
     }
 
-    public async getAppVersion(): Promise<Response> {
+    public async getAppVersion(): Promise<IResponse> {
         try {
             const version = await this.configuracionModel.findByKey('APP_VERSION')
 
@@ -170,7 +162,7 @@ export default class userController extends Controller<IUser, IUserNew, IUserUpd
         }
     }
 
-    public async validateActualPassword(req: Request): Promise<Response> {
+    public async validateActualPassword(req: Request): Promise<IResponse> {
         try {
             const { passwordActual } = req.params
 
@@ -180,7 +172,7 @@ export default class userController extends Controller<IUser, IUserNew, IUserUpd
 
             if (!user) throw new GenericError('Usuario no encontrado', HttpStatusCodes.BAD_REQUEST)
 
-            const isSamePassword = await comparePassword(atob(passwordActual), user.password || '')
+            const isSamePassword = await comparePassword(decodeBase64IfNeeded(passwordActual as string), user.password || '')
 
             return this.responseHandler({ data: { isSamePassword }, statusCode: HttpStatusCodes.OK, message: 'Validación de contraseña actual' })
         } catch (error: any) {
@@ -188,7 +180,7 @@ export default class userController extends Controller<IUser, IUserNew, IUserUpd
         }
     }
 
-    public async changePassword(req: Request): Promise<Response> {
+    public async changePassword(req: Request): Promise<IResponse> {
         try {
             const { password, token } = req.body
 
@@ -208,21 +200,9 @@ export default class userController extends Controller<IUser, IUserNew, IUserUpd
     }
 
     async getUserAuthentication(req: Request): Promise<IUser | null> {
-        const params = parseHeaderParams(req.headers, ['ms'])
-        const { user, ms_token } = req.body
-        let { password } = req.body
-
-        if (params.ms && params.ms == '1') {
-            const adDates = await verifyTokenAD(ms_token)
-            if (!adDates) throw new GenericError('Invalid Token', HttpStatusCodes.BAD_REQUEST)
-            const email = adDates.preferred_username
-            const userFound = await this.model.search({ conditions: [{ field: 'email', value: email }] })
-            if (userFound.length === 0) throw new GenericError('Usuario o contraseña incorrecta', HttpStatusCodes.BAD_REQUEST)
-            return userFound[0]
-        }
-
-        if (!user || !password) return null
-        password = atob(password).trim()
+        const { user, password: encodedPassword } = req.body
+        if (!user || !encodedPassword) return null
+        const normalizedPassword = decodeBase64IfNeeded(encodedPassword)
 
         const conditions: Condicion[] = [
             {
@@ -233,16 +213,16 @@ export default class userController extends Controller<IUser, IUserNew, IUserUpd
         const response = await this.model.search({ conditions })
         const foundUser = response.length > 0 ? response[0] : null
         if (foundUser) {
-            if (!(await comparePassword(password, foundUser?.password || '')))
-                throw new GenericError('Usuario o contraseña incorrecta', HttpStatusCodes.BAD_REQUEST)
+            const isPasswordMatch = await comparePassword(normalizedPassword, foundUser?.password || '')
+            if (!isPasswordMatch) throw new GenericError('Usuario o contraseña incorrecta', HttpStatusCodes.BAD_REQUEST)
         }
         return foundUser
     }
 
-    public async add(req: Request): Promise<Response> {
+    public async add(req: Request): Promise<IResponse> {
         try {
             const userId = await getUserId(req)
-            const insertedRecord = await this.model.add(req.body)
+            const insertedRecord = await this.model.add(req.body, userId)
             if (!insertedRecord) throw new GenericError('Error al crear el usuario', HttpStatusCodes.BAD_REQUEST)
             const rolesModel = new RoleModel()
             const role = await rolesModel.search({ conditions: [{ field: 'role', value: 'Usuario' }], offset: 0, limit: 1 })

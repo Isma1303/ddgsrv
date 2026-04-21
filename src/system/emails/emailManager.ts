@@ -1,14 +1,11 @@
-/* eslint-disable indent */
-import { auth0OutlookSendEmail } from './auth0_outlook_send_email'
 import { nodemailerSendEmail } from './nodemailer_send_email'
 
-export type EMAIL_TRANSPORT = 'nodemailer' | 'auth0'
+export type EMAIL_TRANSPORT = 'nodemailer'
 
 export interface ISendEmailParams {
     to: string[]
     subject: string
     html: string
-    from: string
     sender?: string
     transport: EMAIL_TRANSPORT
 }
@@ -20,16 +17,8 @@ const sendEmail = async (params: ISendEmailParams) => {
                 to: params.to,
                 subject: params.subject,
                 html: params.html,
-                from: params.from,
+                from: "donotreply@3d400c8f-11c8-4c8b-a5de-54e096eb6e28.azurecomm.net",
                 sender: params.sender,
-            })
-            break
-        case 'auth0':
-            await auth0OutlookSendEmail({
-                toRecipients: params.to,
-                subject: params.subject,
-                body: params.html,
-                emailContentType: 'HTML',
             })
             break
         default:

@@ -7,7 +7,7 @@ export default class TableRoleRecordModel<T, TNew, TUpdate> extends Model<T, TNe
 
     constructor() {
         super()
-        this.connectionName = 'DB_ADMIN'
+        this.connectionName = 'DB_codeliq'
         this.schemaName = 'admin'
         this.tableName = 'Table_record_roles'
         this.assignmentIds = ['record_id', 'role_id']

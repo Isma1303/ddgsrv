@@ -18,6 +18,25 @@ const atob = (base64: string) => {
     return Buffer.from(base64, 'base64').toString('binary')
 }
 
+const decodeBase64IfNeeded = (value: string) => {
+    const normalized = (value || '').trim()
+    if (!normalized) return normalized
+
+    // Only decode when the value looks like valid base64 and round-trips safely.
+    if (!/^[A-Za-z0-9+/]+={0,2}$/.test(normalized) || normalized.length % 4 !== 0) {
+        return normalized
+    }
+
+    try {
+        const decoded = Buffer.from(normalized, 'base64').toString('utf8')
+        const reencoded = Buffer.from(decoded, 'utf8').toString('base64').replace(/=+$/g, '')
+        const inputNoPadding = normalized.replace(/=+$/g, '')
+        return reencoded === inputNoPadding ? decoded : normalized
+    } catch {
+        return normalized
+    }
+}
+
 const insecureCrypt = (text: any, salt: any) => {
     const textToChars = (text: any) => text.split('').map((c: any) => c.charCodeAt(0))
     const byteHex = (n: any) => ('0' + Number(n).toString(16)).slice(-2)
@@ -37,4 +56,4 @@ const insecureDecrypt = (encoded: any, salt: any) => {
         .join('')
 }
 
-export { encryptText, comparePassword, atob, btoa, insecureCrypt, insecureDecrypt }
+export { encryptText, comparePassword, atob, btoa, decodeBase64IfNeeded, insecureCrypt, insecureDecrypt }

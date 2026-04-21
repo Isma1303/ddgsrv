@@ -8,8 +8,7 @@ const router = Router()
 const endPoint = '/system_actions'
 const controller = new SystemActionController()
 
-router.all(
-    '*',
+router.use(
     getAuthenticationMiddleware,
     (req: Request, res: Response, next: NextFunction) => {
         res.locals['controller'] = controller

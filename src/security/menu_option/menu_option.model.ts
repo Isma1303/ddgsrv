@@ -6,7 +6,7 @@ import { MenuOption } from './menu_option.interface'
 export default class MenuOptionModel<T, TNew, TUpdate> extends Model<T, TNew, TUpdate> {
     constructor() {
         super()
-        this.connectionName = 'DB_ADMIN'
+        this.connectionName = 'DB_codeliq'
         this.schemaName = 'admin'
         this.tableName = 'Menu_options'
         this.tableId = 'menu_option_id'
@@ -84,7 +84,7 @@ export default class MenuOptionModel<T, TNew, TUpdate> extends Model<T, TNew, TU
                 .distinct('menu_option_id')
             const menuOptions =await query
             
-            const result = nestRecords(menuOptions, 'menu_option_id', 'parent_menu_option_id', 'items')
+            const result = nestRecords(menuOptions, 'id', 'parentId', 'items')
             
             result.unshift({
                 icon: 'bi bi-house',
@@ -94,7 +94,7 @@ export default class MenuOptionModel<T, TNew, TUpdate> extends Model<T, TNew, TU
                 sort: '100',
                 parent_menu_option_id: -1,
                 path: '/',
-                text: 'Home',
+                text: 'Inicio',
             })
             return result
         } catch (error: any) {

@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import Controller from '../../system/controller'
 import Condition from '../../system/interfaces/condition.interface'
-import Response from '../../system/interfaces/response.interface'
+import IResponse from '../../system/interfaces/response.interface'
 import RoleModel from '../role/role.model'
 import RoleSystemActionModel from './role_system_action.model'
 import { HttpStatusCodes } from '../../system/interfaces/http_status_codes'
@@ -27,11 +27,11 @@ export default class RoleSystemActionController extends Controller<IRoleSystemAc
         })
     }
 
-    async getSystemActions(req: Request): Promise<Response> {
+    async getSystemActions(req: Request): Promise<IResponse> {
         try {
             if (!req.params.role_id) throw new MissingParameterError('role_id')
 
-            const role_id = parseInt(req.params.role_id)
+            const role_id = parseInt(req.params.role_id as string)
 
             if (isNaN(role_id)) throw new InvalidParameterTypeError('role_id', 'number')
 
@@ -42,11 +42,11 @@ export default class RoleSystemActionController extends Controller<IRoleSystemAc
         }
     }
 
-    async getAssignedSystemActionsByUser(req: Request): Promise<Response> {
+    async getAssignedSystemActionsByUser(req: Request): Promise<IResponse> {
         try {
             if (!req.params.user_id) throw new MissingParameterError('user_id')
 
-            const user_id = parseInt(req.params.user_id)
+            const user_id = parseInt(req.params.user_id as string)
 
             if (isNaN(user_id)) throw new InvalidParameterTypeError('user_id', 'number')
 
@@ -57,11 +57,11 @@ export default class RoleSystemActionController extends Controller<IRoleSystemAc
         }
     }
 
-    async getSystemActionsByName(req: Request): Promise<Response> {
+    async getSystemActionsByName(req: Request): Promise<IResponse> {
         try {
             if (!req.params.role_id) throw new MissingParameterError('role_id')
 
-            const role_id = parseInt(req.params.role_id)
+            const role_id = parseInt(req.params.role_id as string)
 
             const system_action_name = req.headers['system_action_name'] as string
 
@@ -76,11 +76,11 @@ export default class RoleSystemActionController extends Controller<IRoleSystemAc
         }
     }
 
-    async getRoles(req: Request): Promise<Response> {
+    async getRoles(req: Request): Promise<IResponse> {
         try {
             if (!req.params.system_action_id) throw new MissingParameterError('system_action_id')
 
-            const systemActionId = parseInt(req.params.system_action_id)
+            const systemActionId = parseInt(req.params.system_action_id as string)
 
             if (isNaN(systemActionId)) throw new InvalidParameterTypeError('system_action_id', 'number')
 
@@ -92,11 +92,11 @@ export default class RoleSystemActionController extends Controller<IRoleSystemAc
         }
     }
 
-    public async deleteActions(req: Request): Promise<Response> {
+    public async deleteActions(req: Request): Promise<IResponse> {
         try {
             if (!req.params.role_id) throw new MissingParameterError('role_id')
 
-            const role_id = parseInt(req.params.role_id)
+            const role_id = parseInt(req.params.role_id as string)
 
             if (isNaN(role_id)) throw new InvalidParameterTypeError('role_id', 'number')
 
@@ -115,7 +115,7 @@ export default class RoleSystemActionController extends Controller<IRoleSystemAc
         }
     }
 
-    async createSystemActionsAssignments(req: Request): Promise<Response> {
+    async createSystemActionsAssignments(req: Request): Promise<IResponse> {
         try {
             const { ids, role_id } = req.body
 

@@ -7,8 +7,7 @@ const router = Router()
 const endPoint = '/configuration'
 const controller = new ConfigurationController()
 
-router.all(
-    '*',
+router.use(
     getAuthenticationMiddleware,
     (req: Request, res: Response, next: NextFunction) => {
         res.locals['controller'] = controller

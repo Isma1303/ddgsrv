@@ -4,7 +4,7 @@ import { ISystemAction, ISystemActionNew, ISystemActionUpdate } from './system_a
 export default class SystemActionModel extends Model<ISystemAction, ISystemActionNew, ISystemActionUpdate> {
     constructor() {
         super()
-        this.connectionName = 'DB_ADMIN'
+        this.connectionName = 'DB_codeliq'
         this.schemaName = 'admin'
         this.tableName = 'System_actions'
         this.tableId = 'system_action_id'

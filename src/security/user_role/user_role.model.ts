@@ -6,7 +6,7 @@ import { IUserRole, IUserRoleNew, IUserRoleUpdate, RoleByUser, UserByRole } from
 export default class UserRoleModel extends Model<IUserRole, IUserRoleNew, IUserRoleUpdate> {
     constructor() {
         super()
-        this.connectionName = 'DB_ADMIN'
+        this.connectionName = 'DB_codeliq'
         this.schemaName = 'admin'
         this.tableName = 'User_roles'
         this.assignmentIds = ['user_id', 'role_id']

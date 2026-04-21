@@ -7,8 +7,7 @@ const router = Router()
 const endPoint = '/role_action'
 const controller = new RolAccionController()
 
-router.all(
-    '*',
+router.use(
     getAuthenticationMiddleware,
     (req: Request, res: Response, next: NextFunction) => {
         res.locals['controller'] = controller

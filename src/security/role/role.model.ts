@@ -4,7 +4,7 @@ import { IRole, IRoleNew, IRoleUpdate } from './role.interface'
 export default class RoleModel extends Model<IRole, IRoleNew, IRoleUpdate> {
     constructor() {
         super()
-        this.connectionName = 'DB_ADMIN'
+        this.connectionName = 'DB_codeliq'
         this.schemaName = 'admin'
         this.tableName = 'Roles'
         this.tableId = 'role_id'

@@ -2,7 +2,7 @@ import { ResponseHandlerParams } from './interfaces/controller.interface'
 import { Request } from 'express'
 import Condition from './interfaces/condition.interface'
 import { Detail } from './interfaces/detail.interface'
-import Response from './interfaces/response.interface'
+import IResponse from './interfaces/response.interface'
 import * as jwt from 'jsonwebtoken'
 import * as nodemailer from 'nodemailer'
 import { nodeMailerConfig } from './lib/nodemailer.config'
@@ -20,7 +20,7 @@ import {
 import { HttpStatusCodes } from './interfaces/http_status_codes'
 import { BusinessError, DatabaseError, InvalidStructureError } from './errors/model.error'
 import { HttpStatusCodesTypes } from './interfaces/http_status_codes'
-import { ResponseToken } from './interfaces/token_response.interface'
+import { IResponseToken } from './interfaces/token_response.interface'
 import { FatalGenericError, GenericError } from './errors/error'
 
 /**
@@ -49,9 +49,9 @@ export default class Controller<T, TNew, TUpdate> {
     /**
      * @method getModelProperties
      * @description Obtiene las propiedades del modelo actual.
-     * @returns {Response} Respuesta con las propiedades del modelo.
+     * @returns {IResponse} Respuesta con las propiedades del modelo.
      */
-    public getModelProperties(): Response {
+    public getModelProperties(): IResponse {
         try {
             const data = this.model.getModelProperties()
             return this.responseHandler({ data, message: 'Model properties retrieved successfully', statusCode: HttpStatusCodes.OK })
@@ -64,9 +64,9 @@ export default class Controller<T, TNew, TUpdate> {
      * @method getAll
      * @description Recupera todos los registros con soporte para paginación y detalles adicionales.
      * @param {Request} req - Objeto de solicitud HTTP.
-     * @returns {Promise<Response>} Respuesta con los registros solicitados.
+     * @returns {Promise<IResponse>} Respuesta con los registros solicitados.
      */
-    public async getAll(req: Request): Promise<Response> {
+    public async getAll(req: Request): Promise<IResponse> {
         try {
             const params = parseHeaderParams(req.headers, this.payloadOptions)
             const { sort, offset, limit, details, directionsort, nofilterrls } = params
@@ -88,15 +88,15 @@ export default class Controller<T, TNew, TUpdate> {
      * @method getById
      * @description Recupera un registro específico por su ID.
      * @param {Request} req - Objeto de solicitud HTTP.
-     * @returns {Promise<Response>} Respuesta con el registro solicitado.
+     * @returns {Promise<IResponse>} Respuesta con el registro solicitado.
      * @throws {MissingParameterError} Si el ID no está presente en la solicitud.
      * @throws {InvalidParameterTypeError} Si el ID no es un número válido.
      */
-    public async getById(req: Request): Promise<Response> {
+    public async getById(req: Request): Promise<IResponse> {
         try {
             if (!req.params.id) throw new MissingParameterError('id')
 
-            const id = parseInt(req.params.id)
+            const id = parseInt(req.params.id as string)
 
             if (isNaN(id)) throw new InvalidParameterTypeError('id', 'number')
 
@@ -115,9 +115,9 @@ export default class Controller<T, TNew, TUpdate> {
      * @method getTotalRecords
      * @description Recupera el total de registros disponibles en el modelo.
      * @param {Request} req - Objeto de solicitud HTTP.
-     * @returns {Promise<Response>} Respuesta con el total de registros.
+     * @returns {Promise<IResponse>} Respuesta con el total de registros.
      */
-    public async getTotalRecords(req: Request): Promise<Response> {
+    public async getTotalRecords(req: Request): Promise<IResponse> {
         try {
             const params = parseHeaderParams(req.headers, this.payloadOptions)
             const { nofilterrls } = params
@@ -133,10 +133,10 @@ export default class Controller<T, TNew, TUpdate> {
      * @method search
      * @description Realiza una búsqueda con condiciones específicas, incluyendo paginación y detalles adicionales.
      * @param {Request} req - Objeto de solicitud HTTP.
-     * @returns {Promise<Response>} Respuesta con los resultados de la búsqueda.
+     * @returns {Promise<IResponse>} Respuesta con los resultados de la búsqueda.
      * @throws {BadRequestError} Si las condiciones no son válidas.
      */
-    public async search(req: Request): Promise<Response> {
+    public async search(req: Request): Promise<IResponse> {
         try {
             const params = parseHeaderParams(req.headers, this.payloadOptions.concat(['conditions']))
             const { conditions } = JSON.parse(params.conditions)
@@ -168,9 +168,9 @@ export default class Controller<T, TNew, TUpdate> {
      * @method add
      * @description Agrega un nuevo registro al modelo.
      * @param {Request} req - Objeto de solicitud HTTP.
-     * @returns {Promise<Response>} Respuesta con el registro insertado.
+     * @returns {Promise<IResponse>} Respuesta con el registro insertado.
      */
-    public async add(req: Request): Promise<Response> {
+    public async add(req: Request): Promise<IResponse> {
         try {
             const userId = await getUserId(req)
             const insertedRecord = await this.model.add(req.body, userId)
@@ -184,9 +184,9 @@ export default class Controller<T, TNew, TUpdate> {
      * @method batchInsert
      * @description Agrega múltiples registros al modelo.
      * @param {Request} req - Objeto de solicitud HTTP.
-     * @returns {Promise<Response>} Respuesta con los IDs de los registros insertados.
+     * @returns {Promise<IResponse>} Respuesta con los IDs de los registros insertados.
      */
-    public async batchInsert(req: Request): Promise<Response> {
+    public async batchInsert(req: Request): Promise<IResponse> {
         try {
             const userId = await getUserId(req)
             const insertedIds = await this.model.batchInsert(req.body, userId)
@@ -200,15 +200,15 @@ export default class Controller<T, TNew, TUpdate> {
      * @method deleteById
      * @description Elimina un registro específico por su ID.
      * @param {Request} req - Objeto de solicitud HTTP.
-     * @returns {Promise<Response>} Respuesta confirmando la eliminación.
+     * @returns {Promise<IResponse>} Respuesta confirmando la eliminación.
      * @throws {MissingParameterError} Si el ID no está presente.
      * @throws {InvalidParameterTypeError} Si el ID no es un número válido.
      */
-    public async deleteById(req: Request): Promise<Response> {
+    public async deleteById(req: Request): Promise<IResponse> {
         try {
             if (!req.params.id) throw new MissingParameterError('id')
 
-            const id = parseInt(req.params.id)
+            const id = parseInt(req.params.id as string)
 
             if (isNaN(id)) throw new InvalidParameterTypeError('id', 'number')
 
@@ -223,16 +223,16 @@ export default class Controller<T, TNew, TUpdate> {
      * @method deleteByCompositeKey
      * @description Elimina registros que coinciden con una clave compuesta.
      * @param {Request} req - Objeto de solicitud HTTP.
-     * @returns {Promise<Response>} Respuesta confirmando la eliminación.
+     * @returns {Promise<IResponse>} Respuesta confirmando la eliminación.
      * @throws {MissingParameterError} Si falta algún componente de la clave compuesta.
      * @throws {InvalidParameterTypeError} Si algún componente de la clave compuesta no es válido.
      */
-    public async deleteByCompositeKey(req: Request): Promise<Response> {
+    public async deleteByCompositeKey(req: Request): Promise<IResponse> {
         try {
             if (!req.params.firstId) throw new MissingParameterError('firstId')
             if (!req.params.secondId) throw new MissingParameterError('secondId')
-            const firstId = parseInt(req.params.firstId)
-            const secondId = parseInt(req.params.secondId)
+            const firstId = parseInt(req.params.firstId as string)
+            const secondId = parseInt(req.params.secondId as string)
 
             if (isNaN(firstId)) throw new InvalidParameterTypeError('firstId', 'number')
             if (isNaN(secondId)) throw new InvalidParameterTypeError('secondId', 'number')
@@ -250,10 +250,10 @@ export default class Controller<T, TNew, TUpdate> {
      * @method deleteByCondition
      * @description Elimina registros basados en condiciones específicas.
      * @param {Request} req - Objeto de solicitud HTTP.
-     * @returns {Promise<Response>} Respuesta confirmando la eliminación.
+     * @returns {Promise<IResponse>} Respuesta confirmando la eliminación.
      * @throws {BadRequestError} Si las condiciones son inválidas.
      */
-    public async deleteByCondition(req: Request): Promise<Response> {
+    public async deleteByCondition(req: Request): Promise<IResponse> {
         try {
             const params = parseHeaderParams(req.headers, [...this.payloadOptions, 'conditions'])
             const { conditions } = JSON.parse(params.conditions)
@@ -271,15 +271,15 @@ export default class Controller<T, TNew, TUpdate> {
      * @method updateById
      * @description Actualiza un registro específico por su ID.
      * @param {Request} req - Objeto de solicitud HTTP.
-     * @returns {Promise<Response>} Respuesta con el registro actualizado.
+     * @returns {Promise<IResponse>} Respuesta con el registro actualizado.
      * @throws {MissingParameterError} Si el ID no está presente.
      * @throws {InvalidParameterTypeError} Si el ID no es un número válido.
      */
-    public async updateById(req: Request): Promise<Response> {
+    public async updateById(req: Request): Promise<IResponse> {
         try {
             if (!req.params.id) throw new MissingParameterError('id')
 
-            const id = parseInt(req.params.id)
+            const id = parseInt(req.params.id as string)
 
             if (isNaN(id)) throw new InvalidParameterTypeError('id', 'number')
 
@@ -296,10 +296,10 @@ export default class Controller<T, TNew, TUpdate> {
      * @method multipleUpdate
      * @description Actualiza múltiples registros basados en condiciones específicas.
      * @param {Request} req - Objeto de solicitud HTTP.
-     * @returns {Promise<Response>} Respuesta con los registros actualizados.
+     * @returns {Promise<IResponse>} Respuesta con los registros actualizados.
      * @throws {BadRequestError} Si las condiciones son inválidas.
      */
-    async multipleUpdate(req: Request): Promise<Response> {
+    async multipleUpdate(req: Request): Promise<IResponse> {
         try {
             const params = parseHeaderParams(req.headers, this.payloadOptions.concat(['conditions']))
             const userId = await getUserId(req)
@@ -327,10 +327,10 @@ export default class Controller<T, TNew, TUpdate> {
      * @method getAffectedRecordsByQuery
      * @description Obtiene los registros afectados por una consulta específica.
      * @param {Request} req - Objeto de solicitud HTTP.
-     * @returns {Promise<Response>} Respuesta con los registros afectados.
+     * @returns {Promise<IResponse>} Respuesta con los registros afectados.
      * @throws {BadRequestError} Si las condiciones son inválidas.
      */
-    async getAffectedRecordsByQuery(req: Request): Promise<Response> {
+    async getAffectedRecordsByQuery(req: Request): Promise<IResponse> {
         try {
             const params = parseHeaderParams(req.headers, this.payloadOptions.concat(['conditions']))
             const { nofilterrls } = params
@@ -478,18 +478,20 @@ export default class Controller<T, TNew, TUpdate> {
      * @method responseHandler
      * @description Construye y devuelve una respuesta estándar para las solicitudes exitosas.
      * @param {ResponseHandlerParams} params - Parámetros de la respuesta, incluyendo datos, mensaje y código de estado.
-     * @returns {Response} Objeto de respuesta estructurado.
+     * @returns {IResponse} Objeto de respuesta estructurado.
      */
-    protected responseHandler({ data, message, statusCode, token, version }: ResponseHandlerParams): Response | ResponseToken {
-        const response: Response = { message, statusCode }
+    protected responseHandler({ data, message, statusCode, token, version }: ResponseHandlerParams): IResponse | IResponseToken {
+        const response: IResponse = { message, statusCode }
 
         if (data) {
             response.data = data
         }
 
         if (token) {
-            response.token = token
-            response.version = version
+            const tokenResponse = response as any
+            tokenResponse.token = token
+            tokenResponse.version = version
+            return tokenResponse
         }
 
         return response
@@ -500,9 +502,9 @@ export default class Controller<T, TNew, TUpdate> {
      * @method errorHandler
      * @description Maneja y estructura la respuesta para diferentes tipos de errores.
      * @param {Error} error - Objeto de error capturado.
-     * @returns {Response} Objeto de respuesta con detalles del error.
+     * @returns {IResponse} Objeto de respuesta con detalles del error.
      */
-    public errorHandler(error: Error): Response {
+    public errorHandler(error: Error): IResponse {
         let statusCode: HttpStatusCodesTypes = HttpStatusCodes.INTERNAL_SERVER_ERROR
         let errorMessage: string = 'An unexpected error occurred'
         let message: string = 'An unexpected error occurred'

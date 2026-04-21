@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import Controller from '../../system/controller'
-import Response from '../../system/interfaces/response.interface'
+import IResponse from '../../system/interfaces/response.interface'
 import { getUserId } from '../../system/utils/auth.utils'
 import MenuOptionModel from './menu_option.model'
 import { HttpStatusCodes } from '../../system/interfaces/http_status_codes'
@@ -28,7 +28,7 @@ export default class MenuOptionController extends Controller<IMenuOption, IMenuO
         // getSemanticModelRoles('ea1694ce-b690-481e-ad2f-1da6f18eeeac', '594c0012-ac79-4b24-b671-5bca05c899e7')
     }
 
-    async getMenuOptions(req: Request): Promise<Response> {
+    async getMenuOptions(req: Request): Promise<IResponse> {
         try {
             const userId = await getUserId(req)
             const menuOptions = await this.model.getMenuOptions(userId)
@@ -38,7 +38,7 @@ export default class MenuOptionController extends Controller<IMenuOption, IMenuO
         }
     }
 
-    async getNestedMenuOptions(req: Request): Promise<Response> {
+    async getNestedMenuOptions(req: Request): Promise<IResponse> {
         try {
             const userId = await getUserId(req)
             const nestedMenuOptions = await this.model.getNestedMenuOptions(userId)

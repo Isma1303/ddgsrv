@@ -1,6 +1,6 @@
-import Response from './response.interface'
+import IResponse from './response.interface'
 
-export interface ResponseToken extends Response {
+export interface IResponseToken extends IResponse {
     token: string
     version: string
 }

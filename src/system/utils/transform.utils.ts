@@ -11,7 +11,7 @@ const nestRecords = (records: any[], id: string, parentId: string, nestedName = 
     const tempRecords: Record<string, any>[] = []
 
     records.forEach((record) => {
-        if (record[id] == record[parentId]) {
+        if (!record[parentId] || record[id] == record[parentId]) {
             record[nestedName] = []
             nestedRecords.push(record)
         } else {

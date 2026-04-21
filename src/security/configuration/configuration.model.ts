@@ -3,7 +3,7 @@ import Model from '../../system/model'
 export default class ConfigurationModel<T, TNew, TUpdate> extends Model<T, TNew, TUpdate> {
     constructor() {
         super()
-        this.connectionName = 'DB_ADMIN'
+        this.connectionName = 'DB_codeliq'
         this.schemaName = 'admin'
         this.tableName = 'Configurations'
         this.tableId = 'configuration_id'

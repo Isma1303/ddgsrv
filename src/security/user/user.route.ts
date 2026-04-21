@@ -24,8 +24,7 @@ router.post('/authenticate', authLimiter, async (req: Request, res: Response) =>
 //     return res.status(response.statusCode).json(response)
 // })
 
-router.all(
-    '*',
+router.use(
     getAuthenticationMiddleware,
     (req: Request, res: Response, next: NextFunction) => {
         res.locals['controller'] = controller

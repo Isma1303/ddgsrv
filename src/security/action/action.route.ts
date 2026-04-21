@@ -7,8 +7,7 @@ const router = Router()
 const endPoint = '/action'
 const controller = new ActionController()
 
-router.all(
-    '*',
+router.use(
     getAuthenticationMiddleware,
     (req: Request, res: Response, next: NextFunction) => {
         res.locals['controller'] = controller

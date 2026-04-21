@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import Controller from '../../system/controller'
 import Condition from '../../system/interfaces/condition.interface'
-import Response from '../../system/interfaces/response.interface'
+import IResponse from '../../system/interfaces/response.interface'
 import RoleModel from '../role/role.model'
 import UserModel from '../user/user.model'
 import UserRoleModel from './user_role.model'
@@ -26,11 +26,11 @@ export default class UserRoleController extends Controller<IUserRole, IUserRoleN
         })
     }
 
-    async getUsers(req: Request): Promise<Response> {
+    async getUsers(req: Request): Promise<IResponse> {
         try {
             if (!req.params.role_id) throw new MissingParameterError('role_id')
 
-            const role_id = parseInt(req.params.role_id)
+            const role_id = parseInt(req.params.role_id as string)
 
             if (isNaN(role_id)) throw new InvalidParameterTypeError('role_id', 'number')
 
@@ -41,11 +41,11 @@ export default class UserRoleController extends Controller<IUserRole, IUserRoleN
         }
     }
 
-    async getRoles(req: Request): Promise<Response> {
+    async getRoles(req: Request): Promise<IResponse> {
         try {
             if (!req.params.user_id) throw new MissingParameterError('user_id')
 
-            const user_id = parseInt(req.params.user_id)
+            const user_id = parseInt(req.params.user_id as string)
 
             if (isNaN(user_id)) throw new InvalidParameterTypeError('user_id', 'number')
 
@@ -56,11 +56,11 @@ export default class UserRoleController extends Controller<IUserRole, IUserRoleN
         }
     }
 
-    async getAssignedRoles(req: Request): Promise<Response> {
+    async getAssignedRoles(req: Request): Promise<IResponse> {
         try {
             if (!req.params.user_id) throw new MissingParameterError('user_id')
 
-            const user_id = parseInt(req.params.user_id)
+            const user_id = parseInt(req.params.user_id as string)
 
             if (isNaN(user_id)) throw new InvalidParameterTypeError('user_id', 'number')
 
@@ -71,11 +71,11 @@ export default class UserRoleController extends Controller<IUserRole, IUserRoleN
         }
     }
 
-    public async deleteUsers(req: Request): Promise<Response> {
+    public async deleteUsers(req: Request): Promise<IResponse> {
         try {
             if (!req.params.role_id) throw new MissingParameterError('role_id')
 
-            const role_id = parseInt(req.params.role_id)
+            const role_id = parseInt(req.params.role_id as string)
 
             if (isNaN(role_id)) throw new InvalidParameterTypeError('role_id', 'number')
 
@@ -93,11 +93,11 @@ export default class UserRoleController extends Controller<IUserRole, IUserRoleN
         }
     }
 
-    public async deleteRoles(req: Request): Promise<Response> {
+    public async deleteRoles(req: Request): Promise<IResponse> {
         try {
             if (!req.params.user_id) throw new MissingParameterError('user_id')
 
-            const user_id = parseInt(req.params.user_id)
+            const user_id = parseInt(req.params.user_id as string)
 
             if (isNaN(user_id)) throw new InvalidParameterTypeError('user_id', 'number')
 

@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import Controller from '../../system/controller'
 import Condition from '../../system/interfaces/condition.interface'
-import Response from '../../system/interfaces/response.interface'
+import IResponse from '../../system/interfaces/response.interface'
 import { getUserId } from '../../system/utils/auth.utils'
 import RoleModel from '../role/role.model'
 import UserModel from '../user/user.model'
@@ -28,11 +28,11 @@ export default class TableRoleRecordController extends Controller<ITableRoleReco
         })
     }
 
-    async getAssignedTableRecords(req: Request): Promise<Response> {
+    async getAssignedTableRecords(req: Request): Promise<IResponse> {
         try {
             if (!req.params.role_id) throw new MissingParameterError('role_id')
 
-            const role_id = parseInt(req.params.role_id)
+            const role_id = parseInt(req.params.role_id as string)
 
             if (isNaN(role_id)) throw new InvalidParameterTypeError('role_id', 'number')
 
@@ -44,17 +44,17 @@ export default class TableRoleRecordController extends Controller<ITableRoleReco
         }
     }
 
-    async getAssignedTableRecordsRLS(req: Request): Promise<Response> {
+    async getAssignedTableRecordsRLS(req: Request): Promise<IResponse> {
         try {
             if (!req.params.role_id) throw new MissingParameterError('role_id')
 
-            const role_id = parseInt(req.params.role_id)
+            const role_id = parseInt(req.params.role_id as string)
 
             if (isNaN(role_id)) throw new InvalidParameterTypeError('role_id', 'number')
 
             if (!req.params.table_id) throw new MissingParameterError('table_id')
 
-            const table_id = parseInt(req.params.table_id)
+            const table_id = parseInt(req.params.table_id as string)
 
             if (isNaN(table_id)) throw new InvalidParameterTypeError('table_id', 'number')
 
@@ -66,11 +66,11 @@ export default class TableRoleRecordController extends Controller<ITableRoleReco
         }
     }
 
-    public async deleteTableRecords(req: Request): Promise<Response> {
+    public async deleteTableRecords(req: Request): Promise<IResponse> {
         try {
             if (!req.params.role_id) throw new MissingParameterError('role_id')
 
-            const role_id = parseInt(req.params.role_id)
+            const role_id = parseInt(req.params.role_id as string)
 
             if (isNaN(role_id)) throw new InvalidParameterTypeError('role_id', 'number')
 
@@ -89,11 +89,11 @@ export default class TableRoleRecordController extends Controller<ITableRoleReco
         }
     }
 
-    public async deleteRoles(req: Request): Promise<Response> {
+    public async deleteRoles(req: Request): Promise<IResponse> {
         try {
             if (!req.params.record_id) throw new MissingParameterError('record_id')
 
-            const record_id = parseInt(req.params.record_id)
+            const record_id = parseInt(req.params.record_id as string)
 
             if (isNaN(record_id)) throw new InvalidParameterTypeError('record_id', 'number')
 
@@ -112,7 +112,7 @@ export default class TableRoleRecordController extends Controller<ITableRoleReco
         }
     }
 
-    public async updateTableRecords(req: Request): Promise<Response> {
+    public async updateTableRecords(req: Request): Promise<IResponse> {
         try {
             let { added } = req.body
             const { role_id, table_id, field } = req.body

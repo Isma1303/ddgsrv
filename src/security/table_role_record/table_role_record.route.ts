@@ -7,8 +7,7 @@ const router = Router()
 const endPoint = '/table_role_record'
 const controller = new RegistroTablaRolesController()
 
-router.all(
-    '*',
+router.use(
     getAuthenticationMiddleware,
     (req: Request, res: Response, next: NextFunction) => {
         res.locals['controller'] = controller

@@ -536,7 +536,7 @@
  *        product_category_id: 8
  *        name: Licencia CRM
  *        sku: CRM-PLAT
- *        brand: Solcomp
+ *        brand: codeliq
  *        list_price: 2999.99
  *        item_type: product
  *        billing_model: null

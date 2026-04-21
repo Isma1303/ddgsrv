@@ -7,8 +7,7 @@ const router = Router()
 const endPoint = '/menu_option'
 const controller = new OpcionMenuController()
 
-router.all(
-    '*',
+router.use(
     getAuthenticationMiddleware,
     (req: Request, res: Response, next: NextFunction) => {
         res.locals['controller'] = controller

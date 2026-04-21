@@ -5,7 +5,7 @@ import { IWorkerRunningJob, IWorkerRunningJobNew, IWorkerRunningJobUpdate } from
 export default class WorkerRunningJobModel extends Model<IWorkerRunningJob, IWorkerRunningJobNew, IWorkerRunningJobUpdate> {
     constructor() {
         super()
-        this.connectionName = 'DB_ADMIN'
+        this.connectionName = 'DB_codeliq'
         this.schemaName = 'admin'
         this.tableName = 'Worker_running_jobs'
         this.tableId = 'id'

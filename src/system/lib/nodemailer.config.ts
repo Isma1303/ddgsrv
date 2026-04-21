@@ -5,6 +5,6 @@ export const nodeMailerConfig = {
     port: parseInt(config.EMAIL.EMAIL_PORT),
     auth: {
         user: config.EMAIL.EMAIL_USER,
-        pass: config.EMAIL.EMAIL_PASS.length > 0 ? config.EMAIL.EMAIL_PASS : config.EMAIL.EMAIL_SECRET_KEY,
+        pass: config.EMAIL.EMAIL_PASS,
     },
 }

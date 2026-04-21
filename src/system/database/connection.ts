@@ -3,36 +3,16 @@ import config from '../../config'
 
 class Connection {
     dbCollection: Record<string, any>
-    defaultConnectionName = 'DB_ADMIN'
+    defaultConnectionName = 'DB_codeliq'
     constructor() {
-        const adminDbSettings = {
-            client: config.DB.DB_ADMIN.DB_CLIENT,
+        const codeliqDbSettings = {
+            client: config.DB.DB_codeliq.DB_CLIENT,
             connection: {
-                database: config.DB.DB_ADMIN.DB_NAME,
-                user: config.DB.DB_ADMIN.DB_USER,
-                password: config.DB.DB_ADMIN.DB_PASS,
-                host: config.DB.DB_ADMIN.DB_SERVER,
-                options: {
-                    encrypt: true, // Modificar a false si la conexión es local ya que va sobre http
-                },
-                requestTimeout: 300000,
-            },
-            pool: {
-                min: 1,
-                max: 10,
-            },
-        }
-        const solcompDbSettings = {
-            client: config.DB.DB_SOLCOMP.DB_CLIENT,
-            connection: {
-                database: config.DB.DB_SOLCOMP.DB_NAME,
-                user: config.DB.DB_SOLCOMP.DB_USER,
-                password: config.DB.DB_SOLCOMP.DB_PASS,
-                host: config.DB.DB_SOLCOMP.DB_SERVER,
-                options: {
-                    encrypt: true, // Modificar a false si la conexión es local ya que va sobre http
-                },
-                requestTimeout: 300000,
+                database: config.DB.DB_codeliq.DB_NAME,
+                user: config.DB.DB_codeliq.DB_USER,
+                password: config.DB.DB_codeliq.DB_PASS,
+                host: config.DB.DB_codeliq.DB_SERVER,
+                ssl: { rejectUnauthorized: false },
             },
             pool: {
                 min: 1,
@@ -40,8 +20,7 @@ class Connection {
             },
         }
         this.dbCollection = {
-            DB_ADMIN: knex(adminDbSettings),
-            DB_SOLCOMP: knex(solcompDbSettings),
+            DB_codeliq: knex(codeliqDbSettings),
         }
     }
 

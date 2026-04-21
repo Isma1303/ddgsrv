@@ -7,7 +7,7 @@ import { ISystemAction } from '../system_action/system_action.interface'
 export default class RoleSystemActionModel<T, TNew, TUpdate> extends Model<T, TNew, TUpdate> {
     constructor() {
         super()
-        this.connectionName = 'DB_ADMIN'
+        this.connectionName = 'DB_codeliq'
         this.schemaName = 'admin'
         this.tableName = 'Roles_system_actions'
         this.assignmentIds = ['role_id', 'system_action_id']

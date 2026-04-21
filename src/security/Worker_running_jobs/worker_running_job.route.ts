@@ -7,8 +7,7 @@ const router = Router()
 const endPoint = '/worker-running-job'
 const controller = new WorkerRunningJobController()
 
-router.all(
-    '*',
+router.use(
     getAuthenticationMiddleware,
     (req: Request, res: Response, next: NextFunction) => {
         res.locals['controller'] = controller

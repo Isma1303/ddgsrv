@@ -7,8 +7,7 @@ const router = Router()
 const endPoint = '/role_menu_option'
 const controller = new RoleMenuOptionController()
 
-router.all(
-    '*',
+router.use(
     getAuthenticationMiddleware,
     (req: Request, res: Response, next: NextFunction) => {
         res.locals['controller'] = controller

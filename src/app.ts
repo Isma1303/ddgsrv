@@ -1,19 +1,19 @@
-import * as express from 'express'
+import express from 'express'
 import { config } from 'dotenv'
 config()
-import * as morgan from 'morgan'
+import morgan from 'morgan'
 import { routes } from './system/routes'
 //CORS
-import * as cors from 'cors'
+import cors from 'cors'
 import { corsOptions } from './system/lib/cors.config'
 
 //Passport
-import * as passport from 'passport'
+import passport from 'passport'
 import { strategies } from './system/lib/passport.config'
 
 //Swagger
-import * as swaggerUi from 'swagger-ui-express'
-import * as swaggerJsDoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
+import swaggerJsDoc from 'swagger-jsdoc'
 import { swaggerConfig } from './system/lib/swagger.config'
 
 //security
@@ -24,9 +24,9 @@ const permissionsPolicy = require('permissions-policy')
 //Rate Limiting
 
 const app = express()
-if (process.env.DEV_MODE !== 'true') {
-    app.set('trust proxy', true)
-}
+// if (process.env.DEV_MODE !== 'true') {
+//     app.set('trust proxy', true)
+// }
 // Settings
 app.set('port', process.env.PORT || 3000)
 
@@ -70,7 +70,7 @@ if (process.env.DEV_MODE === 'true') {
     const specs = swaggerJsDoc(swaggerConfig)
     app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs))
 }
-app.use('*', function (req, res) {
+app.use(function (req, res) {
     const respuesta = {
         message: 'Recurso no encontrado',
         statusCode: 404,

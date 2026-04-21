@@ -8,7 +8,7 @@ import { IRole } from '../role/role.interface'
 export default class RoleMenuOptionModel<T, TNew, TUpdate> extends Model<T, TNew, TUpdate> {
     constructor() {
         super()
-        this.connectionName = 'DB_ADMIN'
+        this.connectionName = 'DB_codeliq'
         this.schemaName = 'admin'
         this.tableName = 'Roles_menu_options'
         this.assignmentIds = ['role_id', 'menu_option_id']
@@ -108,7 +108,7 @@ export default class RoleMenuOptionModel<T, TNew, TUpdate> extends Model<T, TNew
                         'a.parent_menu_option_id as parentId',
                         'a.sort',
                     )
-                    .from(`${this.schemaName}.menu_options as a`)
+                    .from(`${this.schemaName}.Menu_options as a`)
                     .leftJoin(`${this.schemaName}.${this.tableName} as b`, function () {
                         this.on('a.menu_option_id', '=', 'b.menu_option_id').andOn('b.role_id', '=', pool.raw('?', [role_id]))
                     })
