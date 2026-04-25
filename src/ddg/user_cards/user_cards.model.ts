@@ -37,14 +37,14 @@ export class UserCardModel extends Model<IUserCard, IUserCardNew, IUserCardUpdat
         ]
     }
 
-    public async getCardByUserId(user_id: number) {
+    public async getCardByUserId(userId: number) {
         try {
             const pool = await this.connection.getConnection()
             const query = pool
                 .select('*')
                 .from(`${this.schemaName}.${this.tableName} as ${this.tableAlias}`)
                 .join('admin.users as u', 'u.user_id', `${this.tableAlias}.user_id`)
-                .where(`${this.tableAlias}.user_id`, user_id)
+                .where(`${this.tableAlias}.user_id`, userId)
                 .limit(1)
 
             return query
