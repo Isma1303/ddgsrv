@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import { Model } from "../../system/model";
 import {
   IAttendanceInsert,
@@ -166,4 +167,77 @@ export class UserCardModel extends Model<
 
     return attendance;
   }
+=======
+import Model from '../../system/model'
+import { IUserCard, IUserCardNew, IUserCardUpdate } from './user_card.interface'
+
+export class UserCardModel extends Model<IUserCard, IUserCardNew, IUserCardUpdate> {
+    constructor() {
+        super()
+        this.schemaName = 'ddg'
+        this.tableName = 'user_cards'
+        this.tableId = 'card_id'
+        this.tableAlias = 'uc'
+        this.tableFields = [
+            {
+                name: 'card_id',
+                description: 'id autogenerado',
+                required: false,
+            },
+            {
+                name: 'user_id',
+                description: 'id del usuario',
+                required: true,
+                join: {
+                    table: 'admin.Users',
+                    alias: 'u',
+                    field: 'user_id',
+                    select: ['status', 'name'],
+                },
+            },
+            {
+                name: 'card_uuid',
+                description: 'uuid autogenerado',
+                required: true,
+            },
+            {
+                name: 'qr_value',
+                description: 'codigo qr',
+                required: true,
+            },
+            {
+                name: 'is_active',
+                description: 'estado de la tarjeta',
+                required: true,
+            },
+        ]
+    }
+
+    public async getCardByUserId(userId: number) {
+        try {
+            const pool = await this.connection.getConnection()
+            const query = pool
+                .select('*')
+                .from(`${this.schemaName}.${this.tableName} as ${this.tableAlias}`)
+                .join('admin.users as u', 'u.user_id', `${this.tableAlias}.user_id`)
+                .where(`${this.tableAlias}.user_id`, userId)
+                .limit(1)
+
+            return query
+        } catch (error: any) {
+            throw error
+        }
+    }
+
+    public async getCardByQrValue(qr_value: string) {
+        try {
+            const pool = this.connection.getConnection()
+            const result = (await pool).select('*').from(`${this.schemaName}.${this.tableName}`).where('qr_value', qr_value).limit(1)
+
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
+>>>>>>> Stashed changes
 }

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import { Controller } from "../../system/controller";
 import { Request } from "express";
 import { v4 as uuidv4 } from "uuid";
@@ -11,6 +12,17 @@ import {
 } from "./user_card.interface";
 import { UserCardModel } from "./user_card.model";
 import { getUserToken } from "../../system/shared/utils/req.utils";
+=======
+import Controller from '../../system/controller'
+import { IUserCard, IUserCardNew, IUserCardUpdate } from './user_card.interface'
+import { UserCardModel } from './user_card.model'
+import { v4 as uuidv4 } from 'uuid'
+import { Request } from 'express'
+import UserModel from '../../security/user/user.model'
+import IResponse from '../../system/interfaces/response.interface'
+import { getUserId } from '../../system/utils/auth.utils'
+import { AttendanceModel } from '../attendance/attendance.model'
+>>>>>>> Stashed changes
 
 const QRCode = require("qrcode") as {
   toDataURL: (value: string) => Promise<string>;
@@ -130,6 +142,7 @@ export class UserCardController extends Controller<
         error: String(error?.message || error),
       };
     }
+<<<<<<< Updated upstream
   }
 
   async scanQr(req: Request) {
@@ -266,4 +279,99 @@ export class UserCardController extends Controller<
       };
     }
   }
+=======
+
+    async scanQr(req: Request): Promise<IResponse> {
+        try {
+            const model = new UserCardModel()
+            const { qr_value } = req.body
+
+            if (!qr_value) {
+                return { statusCode: 400, message: 'qr_value is required' }
+            }
+
+            if (!qr_value.startsWith(QR_PREFIX)) {
+                return { statusCode: 400, message: 'Invalid QR format' }
+            }
+
+            const [card] = await model.getCardByQrValue(qr_value)
+            if (!card) {
+                return { statusCode: 404, message: 'QR does not exist' }
+            }
+
+            if (!card.is_active) {
+                return { statusCode: 409, message: 'Card is inactive' }
+            }
+
+            if (!card.status) {
+                return { statusCode: 409, message: 'User linked to card is inactive' }
+            }
+
+            return {
+                statusCode: 200,
+                message: 'QR resolved successfully',
+                data: {
+                    card_id: card.card_id,
+                    user_id: card.user_id,
+                    user_nm: card.name,
+                    qr_value: card.qr_value,
+                    card_is_active: card.is_active,
+                },
+            }
+        } catch (error: any) {
+            return {
+                statusCode: 500,
+                message: 'Internal Server Error',
+                errorMessage: String(error?.message || error),
+            }
+        }
+    }
+
+    async registerAttendance(req: Request): Promise<IResponse> {
+        try {
+            const attendanceModel = new AttendanceModel()
+            const { attendance_status_id, service_event_id, notes } = req.body
+            const userId = await getUserId(req)
+
+            const card = await this.model.getById(userId)
+            if (!card) {
+                return { statusCode: 404, message: 'Carnet no encontrado.' }
+            }
+
+            if (!card.is_active) {
+                return { statusCode: 409, message: 'Carnet inactivo.' }
+            }
+
+            const event = await this.model.getById(service_event_id)
+            if (!event) {
+                return { statusCode: 404, message: 'Evento no encontrado.' }
+            }
+
+            if (!event.is_active) {
+                return { statusCode: 409, message: 'El evento esta inactivo.' }
+            }
+
+            const attendance = await attendanceModel.add(
+                {
+                    service_event_id: service_event_id,
+                    user_id: userId,
+                    attendance_status_id: attendance_status_id,
+                    notes: notes || '',
+                },
+                userId,
+            )
+
+            return {
+                statusCode: 201,
+                message: 'Asistencia registrada exitosamente',
+            }
+        } catch (error: any) {
+            return {
+                statusCode: 500,
+                message: 'Internal Server Error',
+                errorMessage: String(error?.message || error),
+            }
+        }
+    }
+>>>>>>> Stashed changes
 }

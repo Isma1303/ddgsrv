@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 {
   "compilerOptions": {
     "target": "ES2022",
@@ -9,3 +10,31 @@
     "skipLibCheck": true
   }
 }
+=======
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "lib": [ "es6", "ES2021" ],
+    "sourceMap": true,
+    "outDir": "./build/src",
+    "rootDir": "./src",
+    "strict": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noImplicitThis":false,
+    "types": ["node", "tedious"],
+    "resolveJsonModule": true
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "./src/**/*"
+  ]
+}
+>>>>>>> Stashed changes
