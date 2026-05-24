@@ -1,7 +1,7 @@
 import Configuration from './system/interfaces/configuration.interface'
 
 const configuration: Configuration = {
-    PORT: process.env.PORT || 3000,
+    PORT: Number(process.env.PORT)|| 3000,
     DB: {
         DB_codeliq: {
             DB_USER: process.env.DB_USER || '',
@@ -9,6 +9,7 @@ const configuration: Configuration = {
             DB_SERVER: process.env.DB_SERVER || '',
             DB_NAME: process.env.DB_NAME || '',
             DB_CLIENT: process.env.DB_CLIENT || 'pg',
+            DB_PORT: Number(process.env.DB_PORT) || 5432,
         },
     },
     JWT_SECRET: process.env.JWT_SECRET || '',

@@ -1,4 +1,4 @@
-import { Model } from "../../../system/model";
+import Model from "../../../system/model";
 import {
   IAttendanceStatus,
   IAttendanceStatusNew,
@@ -12,27 +12,24 @@ export class AttendanceStatusModel extends Model<
 > {
   constructor() {
     super();
-    this.tableSchema = "ddg";
+    this.schemaName = "ddg";
     this.tableName = "attendance_status";
-    this.tableKey = "attendance_status_id";
-    this.tableColumns = [
+    this.tableId = "attendance_status_id";
+    this.tableFields = [
       {
-        field: "attendance_status_id",
+        name: "attendance_status_id",
         required: false,
         description: "Attendance Status Identifier",
-        type: "number",
       },
       {
-        field: "attendance_status_cd",
+        name: "attendance_status_cd",
         required: true,
         description: "Attendance Status Code",
-        type: "string",
       },
       {
-        field: "attendance_status_nm",
+        name: "attendance_status_nm",
         required: true,
         description: "Attendance Status Name",
-        type: "string",
       },
     ];
   }

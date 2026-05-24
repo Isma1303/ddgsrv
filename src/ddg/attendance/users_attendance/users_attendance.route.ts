@@ -5,28 +5,28 @@ const router = Router();
 const controller = new AttendanceController();
 
 router.get("/", async (req, res) => {
-  const response = await controller.getAll();
-  res.status(response.status).json(response);
+  const response = await controller.getAll(req);
+  res.status(response.statusCode).json(response);
 });
 
 router.get("/:id", async (req, res) => {
   const response = await controller.getById(req);
-  res.status(response.status).json(response);
+  res.status(response.statusCode).json(response);
 });
 
 router.post("/", async (req, res) => {
-  const response = await controller.create(req);
-  res.status(response.status).json(response);
+  const response = await controller.add(req);
+  res.status(response.statusCode).json(response);
 });
 
 router.put("/:id", async (req, res) => {
-  const response = await controller.update(req);
-  res.status(response.status).json(response);
+  const response = await controller.updateById(req);
+  res.status(response.statusCode).json(response);
 });
 
 router.delete("/:id", async (req, res) => {
-  const response = await controller.delete(req);
-  res.status(response.status).json(response);
+  const response = await controller.deleteById(req);
+  res.status(response.statusCode).json(response);
 });
 
 export default router;

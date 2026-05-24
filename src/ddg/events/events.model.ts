@@ -1,79 +1,70 @@
-import { Model } from "../../system/model";
+import Model from "../../system/model";
 import { IEvent, IEventNew, IEventUpdate } from "./events.interface";
 
 export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
   constructor() {
     super();
-    this.tableSchema = "ddg";
+    this.tableName = "ddg";
     this.tableName = "service_events";
-    this.tableKey = "service_event_id";
+    this.tableId = "service_event_id";
     this.tableAlias = "e";
-    this.tableColumns = [
+    this.tableFields = [
       {
-        field: "service_event_id",
+        name: "service_event_id",
         required: false,
         description: "Service Event Identifier",
-        type: "number",
       },
       {
-        field: "service_nm",
+        name: "service_nm",
         required: true,
         description: "Service Name",
-        type: "string",
       },
       {
-        field: "service_date",
+        name: "service_date",
         required: true,
         description: "Service Date",
-        type: "datetime",
       },
       {
-        field: "start_time",
+        name: "start_time",
         required: true,
         description: "Start Time",
-        type: "string",
       },
       {
-        field: "end_time",
+        name: "end_time",
         required: true,
         description: "End Time",
-        type: "datetime",
       },
       {
-        field: "is_active",
+        name: "is_active",
         required: true,
         description: "Service Event Active Status",
-        type: "boolean",
       },
       {
-        field: "notes",
+        name: "notes",
         required: false,
         description: "Additional Notes",
-        type: "string",
       },
       {
-        field: "department_id",
+        name: "department_id",
         required: true,
         description: "Department Identifier",
-        type: "number",
         join: {
-          table: "departments",
-          tableSchema: "ddg",
-          tableAlias: "d",
-          field: ["department_id", "department_nm"],
-          type: "left",
+          table: "ddg.departments",
+          field: "department_id",
+          alias: "d",
+          select: ["department_id", "department_nm"],
         },
       },
     ];
   }
 
   async create(data: IEventNew) {
-    const pool = await this.pool();
+    const pool = await this.connection.getConnection();
     const transaction = await pool.transaction();
     try {
       const result = await transaction
         .insert(data)
-        .into(`${this.tableSchema}.${this.tableName}`);
+        .into(`${this.tableName}.${this.tableName}`);
       await transaction.commit();
       return result;
     } catch (error) {
@@ -84,7 +75,7 @@ export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
 
   async getUsersbyEvent(event_id: number) {
     try {
-      const pool = await this.pool();
+      const pool = await this.connection.getConnection();
       const result = await pool.raw(
         `                
          SELECT 
@@ -111,7 +102,7 @@ export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
   }
 
   async assignUserEvent(event_id: number, user_id: number | number[]) {
-    const pool = await this.pool();
+    const pool = await this.connection.getConnection();
     const transaction = await pool.transaction();
     try {
       if (Array.isArray(user_id)) {
@@ -121,14 +112,14 @@ export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
         }));
         await transaction
           .insert(insertData)
-          .into(`${this.tableSchema}.service_events_users`);
+          .into(`${this.tableName}.service_events_users`);
       } else {
         await transaction
           .insert({
             service_event_id: event_id,
             user_id: user_id,
           })
-          .into(`${this.tableSchema}.service_events_users`);
+          .into(`${this.tableName}.service_events_users`);
       }
       await transaction.commit();
       return {
@@ -141,7 +132,7 @@ export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
 
   async getEventsByDepartment(department_id: number) {
     try {
-      const pool = await this.pool();
+      const pool = await this.connection.getConnection();
       const result = await pool.raw(
         `                
          SELECT 
@@ -163,7 +154,7 @@ export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
 
   async getEventsByUserId(user_id: number) {
     try {
-      const pool = await this.pool();
+      const pool = await this.connection.getConnection();
       const result = await pool.raw(
         `                
          SELECT 
@@ -185,12 +176,12 @@ export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
   }
 
   async deleteUserFromEvent(event_id: number, user_id: number) {
-    const pool = await this.pool();
+    const pool = await this.connection.getConnection();
     const transaction = await pool.transaction();
     try {
       await transaction
         .delete()
-        .from(`${this.tableSchema}.service_events_users`)
+        .from(`${this.tableName}.service_events_users`)
         .where({
           service_event_id: event_id,
           user_id: user_id,
@@ -206,7 +197,7 @@ export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
   }
 
   async deleteEvent(event_id: number) {
-    const pool = await this.pool();
+    const pool = await this.connection.getConnection();
     const transaction = await pool.transaction();
     try {
       await transaction.raw(
@@ -214,8 +205,8 @@ export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
       );
       await transaction
         .delete()
-        .from(`${this.tableSchema}.${this.tableName}`)
-        .where(this.tableKey, event_id);
+        .from(`${this.tableName}.${this.tableName}`)
+        .where(this.tableId, event_id);
       await transaction.commit();
       return {
         message: "Event deleted successfully",
@@ -227,7 +218,7 @@ export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
   }
 
   async attendance(user_id: number, event_id: number) {
-    const pool = await this.pool();
+    const pool = await this.connection.getConnection();
     const transaction = await pool.transaction();
     try {
       const result = await transaction
@@ -236,7 +227,7 @@ export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
           service_event_id: event_id,
           attemdance_status_id: 6,
         })
-        .into(`${this.tableSchema}.attendance`);
+        .into(`${this.tableName}.attendance`);
       await transaction.commit();
       return result;
     } catch (error: any) {
@@ -247,7 +238,7 @@ export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
 
   async getDepartmentByEvent(event_id: number) {
     try {
-      const pool = await this.pool();
+      const pool = await this.connection.getConnection();
       const result = await pool.raw(
         `
          SELECT 
@@ -266,7 +257,7 @@ export class EventsModel extends Model<IEvent, IEventNew, IEventUpdate> {
 
   async getDepartmentByUser(user_id: number) {
     try {
-      const pool = await this.pool();
+      const pool = await this.connection.getConnection();
       const result = await pool.raw(
         `
          SELECT

@@ -1,36 +1,36 @@
-import { Model } from "../../../system/model";
+import Model from "../../../system/model";
 import { IAttendance } from "./users_attendance.interface";
 
-export class AttendanceModel extends Model<IAttendance, never, never> {
+export class AttendanceModel extends Model<
+  IAttendance,
+  IAttendance,
+  IAttendance
+> {
   constructor() {
     super();
-    this.tableSchema = "ddg";
-    this.tableName = "attendance";
+    this.schemaName = "ddg";
+    this.tableName = "attendances";
     this.tableAlias = "a";
-    this.tableKey = "user_id";
-    this.tableColumns = [
+    this.tableId = "user_id";
+    this.tableFields = [
       {
-        field: "service_event_id",
+        name: "service_event_id",
         description: "service_event_id",
-        type: "number",
         required: true,
       },
       {
-        field: "user_id",
+        name: "user_id",
         description: "user_id",
-        type: "number",
         required: true,
       },
       {
-        field: "attendance_status_id",
+        name: "attendance_status_id",
         description: "attendance_status_id",
-        type: "number",
         required: true,
       },
       {
-        field: "notes",
+        name: "notes",
         description: "notes",
-        type: "string",
         required: false,
       },
     ];

@@ -1,70 +1,82 @@
-import { Router } from "express";
+import { Router, Request, Response, NextFunction } from "express";
+import Route from "../../system/interfaces/route.interface";
+import {
+  getAuthorizationMiddleware,
+  getAuthenticationMiddleware,
+} from "../../system/utils/auth.utils";
 import { UserCardController } from "./user_card.controller";
 
-<<<<<<< Updated upstream
 const router = Router();
+const endPoint = "/ddg/user-cards";
 const controller = new UserCardController();
-=======
-const router = Router()
-const endPoint = '/ddg/user-cards'
-const controller = new UserCardController()
->>>>>>> Stashed changes
 
-router.post("/scan", async (req, res) => {
+router.use(
+  getAuthenticationMiddleware,
+  (req: Request, res: Response, next: NextFunction) => {
+    res.locals["controller"] = controller;
+    next();
+  },
+  getAuthorizationMiddleware,
+);
+
+router.get("/", async (req: Request, res: Response) => {
+  const response = await controller.getAll(req);
+  return res.status(response.statusCode).json(response);
+});
+
+router.post("/", async (req: Request, res: Response) => {
+  const response = await controller.add(req);
+  return res.status(response.statusCode).json(response);
+});
+
+router.post("/scan-qr", async (req: Request, res: Response) => {
   const response = await controller.scanQr(req);
-  res.status(response.status).json(response);
+  return res.status(response.status).json(response);
 });
 
-router.post("/attendance", async (req, res) => {
+router.post("/register-attendance", async (req: Request, res: Response) => {
   const response = await controller.registerAttendance(req);
-  res.status(response.status).json(response);
+  return res.status(response.status).json(response);
 });
 
-router.get("/user/:user_id", async (req, res) => {
-  const response = await controller.getCardByUserId(req);
-  res.status(response.status).json(response);
+router.get("/search", async (req: Request, res: Response) => {
+  const response = await controller.search(req);
+  return res.status(response.statusCode).json(response);
 });
 
-<<<<<<< Updated upstream
-router.get("/", async (req, res) => {
-  const response = await controller.getAll();
-  res.status(response.status).json(response);
+router.get("/getTotalRecords", async (req: Request, res: Response) => {
+  const response = await controller.getTotalRecords(req);
+  return res.status(response.statusCode).json(response);
 });
-=======
-router.post('/scan-qr', async (req: Request, res: Response) => {
-    const response = await controller.scanQr(req)
-    return res.status(response.statusCode).json(response)
-})
 
-router.post('/register-attendance', async (req: Request, res: Response) => {
-    const response = await controller.registerAttendance(req)
-    return res.status(response.statusCode).json(response)
-})
+router.get("/getModelProperties", async (req: Request, res: Response) => {
+  const response = controller.getModelProperties();
+  return res.status(response.statusCode).json(response);
+});
 
-router.get('/search', async (req: Request, res: Response) => {
-    const response = await controller.search(req)
-    return res.status(response.statusCode).json(response)
-})
->>>>>>> Stashed changes
+router.get(
+  "/getAffectedRecordsByQuery",
+  async (req: Request, res: Response) => {
+    const response = await controller.getAffectedRecordsByQuery(req);
+    return res.status(response.statusCode).json(response);
+  },
+);
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", async (req: Request, res: Response) => {
   const response = await controller.getById(req);
-  res.status(response.status).json(response);
+  return res.status(response.statusCode).json(response);
 });
 
-router.post("/", async (req, res) => {
-  const response = await controller.createCard(req);
-  res.status(response.status).json(response);
+router.delete("/:id", async (req: Request, res: Response) => {
+  const response = await controller.deleteById(req);
+  return res.status(response.statusCode).json(response);
 });
 
-router.put("/:id", async (req, res) => {
-  const response = await controller.update(req);
-  res.status(response.status).json(response);
+router.put("/:id", async (req: Request, res: Response) => {
+  const response = await controller.updateById(req);
+  return res.status(response.statusCode).json(response);
 });
 
-router.delete("/:id", async (req, res) => {
-  const response = await controller.delete(req);
-  res.status(response.status).json(response);
-});
+const userCardRouter: Route = { endPoint, router };
 
-export default router;
+export default userCardRouter;

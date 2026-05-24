@@ -1,14 +1,14 @@
-import { Model } from "../../system/model";
+import Model from "../../system/model";
 
 export class DashboardModel extends Model<never, never, never> {
   constructor() {
     super();
   }
 
-  async getDashboardSummary(){
+  async getDashboardSummary() {
     return {
-        // data: await this.getKpis()
-    }
+      // data: await this.getKpis()
+    };
   }
 
   // async getKpis() {
@@ -31,15 +31,15 @@ export class DashboardModel extends Model<never, never, never> {
   //               (date_trunc('month', current_date) + interval '1 month' - interval '1 day')::date AS period_end,
   //               COALESCE(AVG(attendees::numeric), 0) AS avg_attendees_per_event
   //           FROM per_event;
-                
+
   //           `);
 
   //     const activeUsersQuery = await pool.raw(
   //       `
-  //               SELECT 
+  //               SELECT
   //               COUNT(u.*) as total_users
   //               FROM admin.users u
-  //               JOIN admin.user_roles ur on u.user_id = ur.user_id 
+  //               JOIN admin.user_roles ur on u.user_id = ur.user_id
   //               JOIN admin."role" r on ur.role_id = r.role_id
   //               WHERE r.role_cd  in ('LEADER', 'USER') and u.is_active  = TRUE
   //               `,

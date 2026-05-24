@@ -1,106 +1,3 @@
-<<<<<<< Updated upstream
-import { Model } from "./model";
-import { HttpResponseStatus } from "./shared/interfaces/http-response.interface";
-import { Request, Response } from "express";
-
-export class Controller<T, TNew, TUpdate> {
-  model: Model<T, TNew, TUpdate>;
-
-  constructor(model: Model<T, TNew, TUpdate>) {
-    this.model = model;
-  }
-
-  async create(req: Request) {
-    try {
-      const data: T = req.body;
-      const response = await this.model.create(data as any);
-      return {
-        status: HttpResponseStatus.CREATED,
-        data: response,
-        message: "Created",
-      };
-    } catch (error) {
-      return {
-        status: HttpResponseStatus.INTERNAL_SERVER_ERROR,
-        error: error,
-        message: "Internal Server Error",
-      };
-    }
-  }
-
-  async getById(req: Request) {
-    try {
-      const { id } = req.params;
-      const response = await this.model.getById(id as any);
-      return {
-        status: HttpResponseStatus.OK,
-        data: response,
-        message: "OK",
-      };
-    } catch (error) {
-      return {
-        status: HttpResponseStatus.INTERNAL_SERVER_ERROR,
-        error: error,
-        message: "Internal Server Error",
-      };
-    }
-  }
-
-  async update(req: Request) {
-    try {
-      const { id } = req.params;
-      const data: TUpdate = req.body;
-      const response = await this.model.update(id as any, data);
-      return {
-        status: HttpResponseStatus.OK,
-        data: response,
-        message: "OK",
-      };
-    } catch (error) {
-      return {
-        status: HttpResponseStatus.INTERNAL_SERVER_ERROR,
-        error: error,
-        message: "Internal Server Error",
-      };
-    }
-  }
-
-  async delete(req: Request) {
-    try {
-      const { id } = req.params;
-      const response = await this.model.delete(Number(id));
-      return {
-        status: HttpResponseStatus.OK,
-        data: response,
-        message: "OK",
-      };
-    } catch (error) {
-      return {
-        status: HttpResponseStatus.INTERNAL_SERVER_ERROR,
-        error: error,
-        message: "Internal Server Error",
-      };
-    }
-  }
-
-  async getAll() {
-    try {
-      const response = await this.model.getAll();
-      return {
-        status: HttpResponseStatus.OK,
-        data: response,
-        message: "OK",
-      };
-    } catch (error) {
-      return {
-        status: HttpResponseStatus.INTERNAL_SERVER_ERROR,
-        error: error,
-        message: "Internal Server Error",
-      };
-    }
-  }
-}
-=======
 import { ResponseHandlerParams } from './interfaces/controller.interface'
 import { Request } from 'express'
 import Condition from './interfaces/condition.interface'
@@ -670,12 +567,8 @@ export default class Controller<T, TNew, TUpdate> {
      * @returns {Promise<Error | nodemailer.SentMessageInfo | true>} Resultado del envío del correo.
      */
     protected async sendEmail(email: Email): Promise<Error | nodemailer.SentMessageInfo | true> {
-        try {
-            const transporter = nodemailer.createTransport(nodeMailerConfig)
-            return await transporter.sendMail(email)
-        } catch (error) {
-            throw error
-        }
+        const transporter = nodemailer.createTransport(nodeMailerConfig)
+        return await transporter.sendMail(email)
     }
 
     /**
@@ -698,4 +591,3 @@ export default class Controller<T, TNew, TUpdate> {
         )
     }
 }
->>>>>>> Stashed changes

@@ -1,4 +1,4 @@
-import { Controller } from "../../../system/controller";
+import Controller from "../../../system/controller";
 import {
   IAttendanceStatus,
   IAttendanceStatusNew,
@@ -12,6 +12,7 @@ export class AttendanceStatusController extends Controller<
   IAttendanceStatusUpdate
 > {
   constructor() {
-    super(new AttendanceStatusModel());
+    super();
+    this.model = new AttendanceStatusModel();
   }
 }

@@ -1,10 +1,10 @@
-import { IUser } from "../../admin/auth/user.interface";
-import { RoleModel } from "../../admin/role/role.model";
+import { IUser } from "../../security/user/user.interface";
 import { configuration } from "../../system/configuration";
-import { Controller } from "../../system/controller";
+import Controller from "../../system/controller";
 import { sendEmail } from "../../system/email/email.config";
 import { ReminderTemplate } from "../../system/email/template/reminder.template";
 import { getUserToken } from "../../system/shared/utils/req.utils";
+import { getUserId } from "../../system/utils/auth.utils";
 import { IEvent, IEventNew, IEventUpdate } from "./events.interface";
 import { EventsModel } from "./events.model";
 import { Request } from "express";
@@ -17,13 +17,16 @@ export class EventsController extends Controller<
   IEventUpdate
 > {
   constructor() {
-    super(new EventsModel());
+    model: EventsModel;
+    super();
+    this.model = new EventsModel();
   }
 
   async createNewEvent(req: Request) {
     try {
+      const userId = await getUserId(req);
       const event: any = req.body.event;
-      const result = await this.model.create(event);
+      const result = await this.model.add(event, userId);
       return {
         status: 200,
         message: "Event created successfully",
@@ -34,125 +37,6 @@ export class EventsController extends Controller<
         status: 400,
         message: "Event creation failed",
         error: error.message,
-      };
-    }
-  }
-
-  async sendReminderEmail(req: Request) {
-    try {
-      const model = this.model as EventsModel;
-
-      const { eventId } = req.params;
-
-      if (!eventId) {
-        return {
-          status: 400,
-          message: "Event ID is required",
-        };
-      }
-
-      const users = await model.getUsersbyEvent(Number(eventId));
-
-      if (users.rows.length === 0) {
-        return {
-          status: 404,
-          message: "No users found for this event",
-        };
-      }
-
-      const usersData = users.rows as Array<
-        IUser & { service_nm: string; service_date: string | Date }
-      >;
-
-      const usersWithEmail = usersData.filter((user) => Boolean(user.email));
-
-      if (usersWithEmail.length === 0) {
-        return {
-          status: 400,
-          message: "No valid emails found for this event",
-        };
-      }
-
-      const uniqueUsersByEmail = Array.from(
-        new Map(usersWithEmail.map((user) => [user.email, user])).values(),
-      );
-
-      const getDepartmentName: any = await model.getDepartmentByEvent(
-        Number(eventId),
-      );
-
-      let successfulEmails = 0;
-      let rateLimited = false;
-
-      for (const user of uniqueUsersByEmail) {
-        const reminderHtml = ReminderTemplate(
-          configuration.logo_url,
-          user.user_nm,
-          user.service_nm,
-          user.service_date,
-          getDepartmentName.department_nm!,
-          user.start_time!,
-          user.end_time!,
-          user.notes,
-        );
-
-        const sendResult = await sendEmail(
-          user.email,
-          "Recordatorio de Evento",
-          `Hola ${user.user_nm}, este es un recordatorio de tu evento: ${user.service_nm} (${user.service_date}).`,
-          reminderHtml,
-        );
-
-        if (sendResult.sent) {
-          successfulEmails += 1;
-        }
-
-        if (sendResult.rateLimited) {
-          rateLimited = true;
-          break;
-        }
-
-        await new Promise((resolve) =>
-          setTimeout(resolve, EMAIL_SEND_DELAY_MS),
-        );
-      }
-
-      if (rateLimited) {
-        return {
-          status: 429,
-          message: "Email provider rate limit reached. Retry in a few minutes.",
-          data: {
-            totalUsers: uniqueUsersByEmail.length,
-            sentEmails: successfulEmails,
-            failedEmails: uniqueUsersByEmail.length - successfulEmails,
-          },
-        };
-      }
-
-      if (successfulEmails === 0) {
-        return {
-          status: 400,
-          message: "Failed to send reminder email",
-        };
-      }
-
-      return {
-        status: successfulEmails === uniqueUsersByEmail.length ? 200 : 207,
-        message:
-          successfulEmails === uniqueUsersByEmail.length
-            ? "Reminder email sent successfully"
-            : "Reminder email sent with partial failures",
-        data: {
-          totalUsers: uniqueUsersByEmail.length,
-          sentEmails: successfulEmails,
-          failedEmails: uniqueUsersByEmail.length - successfulEmails,
-        },
-      };
-    } catch (error) {
-      return {
-        status: 500,
-        message: "Failed to send reminder email",
-        error: error instanceof Error ? error.message : String(error),
       };
     }
   }
@@ -259,7 +143,7 @@ export class EventsController extends Controller<
       }
 
       if (roleCd == "ADMIN") {
-        const result = await model.getAll();
+        const result = await model.getAll({});
 
         return {
           status: 200,
