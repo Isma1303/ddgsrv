@@ -12,6 +12,7 @@ class Connection {
                 user: config.DB.DB_codeliq.DB_USER,
                 password: config.DB.DB_codeliq.DB_PASS,
                 host: config.DB.DB_codeliq.DB_SERVER,
+                port: config.DB.DB_codeliq.DB_PORT,
                 ssl: { rejectUnauthorized: false },
             },
             pool: {
@@ -43,7 +44,7 @@ class Connection {
     }
 
     getClient(connectionName: string) {
-        return config.DB[connectionName]?.DB_CLIENT || 'mssql'
+        return config.DB.DB_codeliq?.DB_CLIENT || 'mssql'
     }
 }
 
