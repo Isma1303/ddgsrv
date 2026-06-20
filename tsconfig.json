@@ -1,3 +1,16 @@
+<<<<<<< Updated upstream
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  }
+}
+=======
 {
   "compilerOptions": {
     "module": "commonjs",
@@ -8,7 +21,6 @@
     "rootDir": "./src",
     "strict": true,
     "moduleResolution": "node",
-    "ignoreDeprecations": "6.0",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -25,3 +37,4 @@
     "./src/**/*"
   ]
 }
+>>>>>>> Stashed changes

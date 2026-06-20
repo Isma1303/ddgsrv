@@ -6,7 +6,11 @@ const maxSize = 5 * 1024 * 1024
 const fileFilter = (req: any, file: any, cb: any) => {
     const allowedMimeTypes = [
         'image/jpeg',
+        'image/jpg',
         'image/png',
+        'image/webp',
+        'image/gif',
+        'image/avif',
         'application/pdf',
         'application/msword', // doc
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
